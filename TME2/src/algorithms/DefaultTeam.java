@@ -35,6 +35,8 @@ public class DefaultTeam {
 				}
 			}
 		}
+		
+		System.out.println("diametre norm : "+ distance(p, q));
 
 		return new Line(p,q);
 	}
@@ -65,6 +67,10 @@ public class DefaultTeam {
 				dmax = i;
 			}
 		}
+		
+		System.out.println("diametre opti : "+ distance(max.getP(), max.getQ()));
+		System.out.println(max.getP().x==max.getQ().x && max.getP().y==max.getQ().y);
+		
 		return max;
 	}
 
