@@ -39,20 +39,38 @@ public class DefaultTeam {
 		return new Line(p,q);
 	}
 
+	
+	
+	
+	
+	
 	// calculDiametreOptimise: ArrayList<Point> --> Line
 	//   renvoie une pair de points de la liste, de distance maximum.
 	public Line calculDiametreOptimise(ArrayList<Point> points) {
 		if (points.size()<3) {
 			return null;
 		}
+		
+		var enveloppe = enveloppeConvexe(points);
 
-		Point p=points.get(1);
-		Point q=points.get(2);
-
-		/*******************
-		 * PARTIE A ECRIRE *
-		 *******************/
-		return new Line(p,q);
+		double max = 0.;
+		Line line = null;
+		
+		
+		for(int i = 0; i<enveloppe.size(); i++) {
+			var A = enveloppe.get(i);
+			var B = enveloppe.get((i+1)%enveloppe.size());
+			var C = enveloppe.get((i+2)%enveloppe.size());
+			
+			for(int j = 0; j<enveloppe.size(); j++) {
+				
+				
+				
+			}
+			
+		}
+		
+		return null;
 	}
 
 	public double distance(Point a, Point b) {
