@@ -49,9 +49,19 @@ public class DefaultTeam {
 		Point p=points.get(1);
 		Point q=points.get(2);
 
+		ArrayList<Point> enveloppe = enveloppeConvexeJarvis(points);
+		ArrayList<Line> paire = PairesAntipodales(enveloppe);
+		Line max=paire.get(0);
+		double dmax = distance(max.getP(), max.getQ());
+		for(Line l : paire) {
+			double i = distance(l.getP(), l.getQ());
+			if(i>dmax) {
+				max = l;
+				dmax = i;
+			}
+		}
 		
-		
-		return new Line(p,q);
+		return max;
 	}
 
 	public double distance(Point a, Point b) {
@@ -385,21 +395,21 @@ public class DefaultTeam {
 	}
 	
 	
-	public ArrayList<Line> PairesAntipodales (ArrayList<Point> enveloppe) {
+	public ArrayList<Line> PairesAntipodales (ArrayList<Point> e) {
 		ArrayList<Line> list = new ArrayList<Line>();
-		int n = enveloppe.size();
-		int k = 2;
-		while((distPointDroite(enveloppe.get(k), enveloppe.get(n), enveloppe.get(1))) < (distPointDroite(enveloppe.get(k+1), enveloppe.get(n), enveloppe.get(1)))) {
+		int n = e.size()-1;
+		int k = 1;
+		while((distPointDroite(e.get(k), e.get(n), e.get(1))) < (distPointDroite(e.get(k+1), e.get(n), e.get(1)))) {
 			k++;
 		}
 		int i = 1;
 		int j=k;
 		while(i<k && j<n) {
-			while((distPointDroite(enveloppe.get(j), enveloppe.get(i), enveloppe.get(i+1))) < (distPointDroite(enveloppe.get(j+1), enveloppe.get(i), enveloppe.get(i+1)))) {
-				list.add(new Line(enveloppe.get(1), enveloppe.get(j)));
+			while((distPointDroite(e.get(j), e.get(i), e.get(i+1))) < (distPointDroite(e.get(j+1), e.get(i), e.get(i+1)))) {
+				list.add(new Line(e.get(1), e.get(j)));
 				j++;
 			}
-			list.add(new Line(enveloppe.get(1), enveloppe.get(j)));
+			list.add(new Line(e.get(1), e.get(j)));
 			i++;
 		}
 		
