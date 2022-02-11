@@ -57,7 +57,7 @@ public class DefaultTeam {
 		Point q=points.get(2);
 
 		ArrayList<Point> enveloppe = enveloppeConvexeJarvis(points);
-		ArrayList<Line> paire = PairesAntipodales(enveloppe);
+		ArrayList<Line> paire = PairesAntipodales2(enveloppe);
 		Line max=paire.get(0);
 		double dmax = distance(max.getP(), max.getQ());
 		for(Line l : paire) {
@@ -445,7 +445,7 @@ public class DefaultTeam {
 				for(int j = 0; j<enveloppe.size(); j++) {
 					Point R = enveloppe.get(j);
 					double RAB = distPointDroite(R, A, B);
-					double RBC = distPointDroite(R, A, B);
+					double RBC = distPointDroite(R, B, C);
 					
 					if(RAB > P_max) {
 						P_max = RAB;
