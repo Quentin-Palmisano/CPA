@@ -42,7 +42,78 @@ public class DefaultTeam {
 	}
 
 	
+	public ArrayList<Line> PairesAntipodales (ArrayList<Point> e) {
+		ArrayList<Line> list = new ArrayList<Line>();
+		int n = e.size();
+		int k = 1;
+		while((distPointDroite(e.get(k), e.get(n-1), e.get(0))) < (distPointDroite(e.get((k+1)%n), e.get(n-1), e.get(0)))) {
+			k++;
+		}
+		int i = 0;
+		int j=k;
+		while(i<=k && j<n) {
+			while(((distPointDroite(e.get(j), e.get(i), e.get(i+1))) < (distPointDroite(e.get((j+1)%n), e.get(i), e.get(i+1)))) && j<n-1) {
+				list.add(new Line(e.get(i), e.get(j)));
+				j++;
+			}
+			list.add(new Line(e.get(i), e.get(j)));
+			i++;
+		}
+		return list;
+	}
 	
+
+	public ArrayList<Line> PairesAntipodales2(ArrayList<Point> enveloppe) {
+		
+		var paires = new ArrayList<Line>();
+		
+		for(int i = 0; i<enveloppe.size(); i++) {
+			Point A = enveloppe.get(i);
+			Point B = enveloppe.get((i+1)%enveloppe.size());
+			Point C = enveloppe.get((i+2)%enveloppe.size());
+			
+			double P_max = 0;
+			int P_index = -1;
+			
+			double Q_max = 0;
+			int Q_index = -1;
+			
+			for(int j = 0; j<enveloppe.size(); j++) {
+				Point R = enveloppe.get(j);
+				double RAB = distPointDroite(R, A, B);
+				double RBC = distPointDroite(R, B, C);
+				
+				System.out.println(RAB + " " + RBC);
+				
+				if(RAB > P_max) {
+					P_max = RAB;
+					P_index = j;
+				}
+				
+				if(RBC > Q_max) {
+					Q_max = RBC;
+					Q_index = j;
+				}
+				
+			}
+			
+			int min = P_index < Q_index ? P_index : Q_index;
+			int max = P_index > Q_index ? P_index : Q_index;
+			
+			for(int j = min; j<max; j++) {
+				Point R = enveloppe.get(j);
+				paires.add(new Line(B, R));
+			}
+			
+		}
+		
+		return paires;
+		
+	}
+	
+	public double distPointDroite(Point r, Point p, Point q) {
+		return Math.abs(crossprod(p, q, r));
+	}
 	
 	
 	
@@ -396,6 +467,16 @@ public class DefaultTeam {
 		
 		return enveloppe;
 	}
+	
+	public ArrayList<Point> enveloppeConvexeRectangle(ArrayList<Point> points){
+
+		ArrayList<Point> enveloppe = enveloppeConvexeJarvis(points);
+		ArrayList<Point> result = new ArrayList<Point>();
+		
+				
+		
+		return result;
+	}
 
 
 	// enveloppeConvexe: ArrayList<Point> --> ArrayList<Point>
@@ -405,80 +486,7 @@ public class DefaultTeam {
 			return null;
 		}
 		//points = triPixel(new HashMap<Integer, Point>(), new HashMap<Integer, Point>(), points);
-		return enveloppeConvexeJarvis(points);
-	}
-	
-	public ArrayList<Line> PairesAntipodales (ArrayList<Point> e) {
-		ArrayList<Line> list = new ArrayList<Line>();
-		int n = e.size();
-		int k = 1;
-		while((distPointDroite(e.get(k), e.get(n-1), e.get(0))) < (distPointDroite(e.get((k+1)%n), e.get(n-1), e.get(0)))) {
-			k++;
-		}
-		int i = 0;
-		int j=k;
-		while(i<=k && j<n) {
-			while(((distPointDroite(e.get(j), e.get(i), e.get(i+1))) < (distPointDroite(e.get((j+1)%n), e.get(i), e.get(i+1)))) && j<n-1) {
-				list.add(new Line(e.get(i), e.get(j)));
-				j++;
-			}
-			list.add(new Line(e.get(i), e.get(j)));
-			i++;
-		}
-		return list;
-	}
-	
-
-	public ArrayList<Line> PairesAntipodales2(ArrayList<Point> enveloppe) {
-		
-		var paires = new ArrayList<Line>();
-		
-		for(int i = 0; i<enveloppe.size(); i++) {
-			Point A = enveloppe.get(i);
-			Point B = enveloppe.get((i+1)%enveloppe.size());
-			Point C = enveloppe.get((i+2)%enveloppe.size());
-			
-			double P_max = 0;
-			int P_index = -1;
-			
-			double Q_max = 0;
-			int Q_index = -1;
-			
-			for(int j = 0; j<enveloppe.size(); j++) {
-				Point R = enveloppe.get(j);
-				double RAB = distPointDroite(R, A, B);
-				double RBC = distPointDroite(R, B, C);
-				
-				System.out.println(RAB + " " + RBC);
-				
-				if(RAB > P_max) {
-					P_max = RAB;
-					P_index = j;
-				}
-				
-				if(RBC > Q_max) {
-					Q_max = RBC;
-					Q_index = j;
-				}
-				
-			}
-			
-			int min = P_index < Q_index ? P_index : Q_index;
-			int max = P_index > Q_index ? P_index : Q_index;
-			
-			for(int j = min; j<max; j++) {
-				Point R = enveloppe.get(j);
-				paires.add(new Line(B, R));
-			}
-			
-		}
-		
-		return paires;
-		
-	}
-	
-	public double distPointDroite(Point r, Point p, Point q) {
-		return Math.abs(crossprod(p, q, r));
+		return enveloppeConvexeRectangle(points);
 	}
 	
 
