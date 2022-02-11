@@ -39,6 +39,11 @@ public class DefaultTeam {
 		return new Line(p,q);
 	}
 
+	
+	
+	
+	
+	
 	// calculDiametreOptimise: ArrayList<Point> --> Line
 	//   renvoie une pair de points de la liste, de distance maximum.
 	public Line calculDiametreOptimise(ArrayList<Point> points) {
@@ -393,7 +398,6 @@ public class DefaultTeam {
 		return enveloppeConvexeJarvis(points);
 	}
 	
-	
 	public ArrayList<Line> PairesAntipodales (ArrayList<Point> e) {
 		ArrayList<Line> list = new ArrayList<Line>();
 		int n = e.size()-2;
@@ -412,6 +416,59 @@ public class DefaultTeam {
 			i++;
 		}
 		return list;
+	}
+	
+
+	public ArrayList<Line> PairesAntipodales2(ArrayList<Point> enveloppe) {
+		
+		var paires = new ArrayList<Line>();
+		
+		try {
+		
+			for(int i = 0; i<enveloppe.size(); i++) {
+				Point A = enveloppe.get(i);
+				Point B = enveloppe.get((i+1)%enveloppe.size());
+				Point C = enveloppe.get((i+2)%enveloppe.size());
+				
+				double P_max = 0;
+				int P_index = -1;
+				
+				double Q_max = 0;
+				int Q_index = -1;
+				
+				for(int j = 0; j<enveloppe.size(); j++) {
+					Point R = enveloppe.get(j);
+					double RAB = distPointDroite(R, A, B);
+					double RBC = distPointDroite(R, A, B);
+					
+					if(RAB > P_max) {
+						P_max = RAB;
+						P_index = j;
+					}
+					
+					if(RBC > Q_max) {
+						Q_max = RBC;
+						Q_index = j;
+					}
+					
+				}
+				
+				int min = P_index < Q_index ? P_index : Q_index;
+				int max = P_index > Q_index ? P_index : Q_index;
+				
+				for(int j = min; j<max; j++) {
+					Point R = enveloppe.get(j);
+					paires.add(new Line(B, R));
+				}
+				
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return paires;
+		
 	}
 	
 	public double distPointDroite(Point r, Point p, Point q) {
