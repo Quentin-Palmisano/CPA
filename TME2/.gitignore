@@ -1,4 +1,3 @@
-*/build
-*/jars
-*/META-INF
-*/bin
+build
+META-INF
+bin

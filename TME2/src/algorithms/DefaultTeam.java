@@ -478,7 +478,7 @@ public class DefaultTeam {
 	}
 	
 	public double distPointDroite(Point r, Point p, Point q) {
-		return prodvect(p, q, r)/distance(p, q);
+		return Math.abs(crossprod(p, q, r));
 	}
 	
 
