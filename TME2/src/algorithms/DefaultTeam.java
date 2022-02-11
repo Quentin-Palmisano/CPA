@@ -51,7 +51,7 @@ public class DefaultTeam {
 			return null;
 		}
 		
-		var enveloppe = enveloppeConvexe(points);
+		var enveloppe = PairesAntipodales2(points);
 
 		double max = 0.;
 		Line line = null;
@@ -403,7 +403,6 @@ public class DefaultTeam {
 		return enveloppeConvexeJarvis(points);
 	}
 	
-	
 	public ArrayList<Line> PairesAntipodales (ArrayList<Point> enveloppe) {
 		ArrayList<Line> list = new ArrayList<Line>();
 		int n = enveloppe.size();
@@ -423,6 +422,59 @@ public class DefaultTeam {
 		}
 		
 		return list;
+	}
+	
+
+	public ArrayList<Line> PairesAntipodales2(ArrayList<Point> enveloppe) {
+		
+		var paires = new ArrayList<Line>();
+		
+		try {
+		
+			for(int i = 0; i<enveloppe.size(); i++) {
+				Point A = enveloppe.get(i);
+				Point B = enveloppe.get((i+1)%enveloppe.size());
+				Point C = enveloppe.get((i+2)%enveloppe.size());
+				
+				double P_max = 0;
+				int P_index = -1;
+				
+				double Q_max = 0;
+				int Q_index = -1;
+				
+				for(int j = 0; j<enveloppe.size(); j++) {
+					Point R = enveloppe.get(j);
+					double RAB = distPointDroite(R, A, B);
+					double RBC = distPointDroite(R, A, B);
+					
+					if(RAB > P_max) {
+						P_max = RAB;
+						P_index = j;
+					}
+					
+					if(RBC > Q_max) {
+						Q_max = RBC;
+						Q_index = j;
+					}
+					
+				}
+				
+				int min = P_index < Q_index ? P_index : Q_index;
+				int max = P_index > Q_index ? P_index : Q_index;
+				
+				for(int j = min; j<max; j++) {
+					Point R = enveloppe.get(j);
+					paires.add(new Line(B, R));
+				}
+				
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return paires;
+		
 	}
 	
 	public double distPointDroite(Point r, Point p, Point q) {
