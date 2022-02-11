@@ -65,7 +65,6 @@ public class DefaultTeam {
 				dmax = i;
 			}
 		}
-		
 		return max;
 	}
 
@@ -401,22 +400,21 @@ public class DefaultTeam {
 	
 	public ArrayList<Line> PairesAntipodales (ArrayList<Point> e) {
 		ArrayList<Line> list = new ArrayList<Line>();
-		int n = e.size()-1;
+		int n = e.size()-2;
 		int k = 1;
-		while((distPointDroite(e.get(k), e.get(n), e.get(1))) < (distPointDroite(e.get(k+1), e.get(n), e.get(1)))) {
+		while((distPointDroite(e.get(k), e.get(n), e.get(0))) < (distPointDroite(e.get(k+1), e.get(n), e.get(0)))) {
 			k++;
 		}
-		int i = 1;
+		int i = 0;
 		int j=k;
 		while(i<k && j<n) {
-			while((distPointDroite(e.get(j), e.get(i), e.get(i+1))) < (distPointDroite(e.get(j+1), e.get(i), e.get(i+1)))) {
+			while(((distPointDroite(e.get(j), e.get(i), e.get(i+1))) < (distPointDroite(e.get(j+1), e.get(i), e.get(i+1)))) && j<n) {
 				list.add(new Line(e.get(1), e.get(j)));
 				j++;
 			}
 			list.add(new Line(e.get(1), e.get(j)));
 			i++;
 		}
-		
 		return list;
 	}
 	
