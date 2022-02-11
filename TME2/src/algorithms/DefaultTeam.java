@@ -404,8 +404,8 @@ public class DefaultTeam {
 	}
 	
 	
-	public HashMap<Point, Point> PairesAntipodales (ArrayList<Point> enveloppe) {
-		HashMap<Point, Point> map = new HashMap<Point, Point>();
+	public ArrayList<Line> PairesAntipodales (ArrayList<Point> enveloppe) {
+		ArrayList<Line> list = new ArrayList<Line>();
 		int n = enveloppe.size();
 		int k = 2;
 		while((distPointDroite(enveloppe.get(k), enveloppe.get(n), enveloppe.get(1))) < (distPointDroite(enveloppe.get(k+1), enveloppe.get(n), enveloppe.get(1)))) {
@@ -415,14 +415,14 @@ public class DefaultTeam {
 		int j=k;
 		while(i<k && j<n) {
 			while((distPointDroite(enveloppe.get(j), enveloppe.get(i), enveloppe.get(i+1))) < (distPointDroite(enveloppe.get(j+1), enveloppe.get(i), enveloppe.get(i+1)))) {
-				map.put(enveloppe.get(1), enveloppe.get(j));
+				list.add(new Line(enveloppe.get(1), enveloppe.get(j)));
 				j++;
 			}
-			map.put(enveloppe.get(1), enveloppe.get(j));
+			list.add(new Line(enveloppe.get(1), enveloppe.get(j)));
 			i++;
 		}
 		
-		return map;
+		return list;
 	}
 	
 	public double distPointDroite(Point r, Point p, Point q) {
