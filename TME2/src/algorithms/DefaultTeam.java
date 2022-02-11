@@ -126,6 +126,10 @@ public class DefaultTeam {
 	public int prodvect (Point q, Point p, Point r) {
 		return (p.x-q.x)*(r.y-q.y)-(p.y-q.y)*(r.x-q.x);
 	}
+	
+	public int crossprod(Point p, Point q, Point r) {
+		return (q.x-p.x)*(r.y-p.y)-(q.y-p.y)*(r.x-p.x);
+	}
 
 	public boolean estSeparent(Point q, Point p, ArrayList<Point> points){
 		Point first = points.get(0);
@@ -440,6 +444,8 @@ public class DefaultTeam {
 					Point R = enveloppe.get(j);
 					double RAB = distPointDroite(R, A, B);
 					double RBC = distPointDroite(R, B, C);
+					
+					System.out.println(RAB + " " + RBC);
 					
 					if(RAB > P_max) {
 						P_max = RAB;
