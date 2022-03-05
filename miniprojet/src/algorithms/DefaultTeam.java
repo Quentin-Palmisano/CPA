@@ -134,12 +134,11 @@ public class DefaultTeam {
 	}
 	
 	//Kruskal du prof
-	public ArrayList<Line> kruskal(ArrayList<Line> edges) {
+	public ArrayList<Line> kruskal1(ArrayList<Line> edges) {
 		edges.sort( (Line a, Line b) -> {return (int) (distanceCarre(a.getP(), a.getQ()) - (int) distanceCarre(b.getP(), b.getQ()));} );
 		ArrayList<Line> kruskal = new ArrayList<Line>();
 		Line current;
 		NameTag forest = new NameTag(getPointsList(edges));
-		System.out.println(forest.points.size());
 		while (edges.size()!=0) {
 			current = edges.remove(0);
 			if (forest.tag(current.getP())!=forest.tag(current.getQ())) {
@@ -150,12 +149,11 @@ public class DefaultTeam {
 		return kruskal;
 	}
 	
-	public ArrayList<Line>  kruskal(ArrayList<Line> aretes, boolean SIGNATURE_DIFFERENTE) {
+	public ArrayList<Line>  kruskal2(ArrayList<Line> aretes) {
 		ArrayList<Line> result = new ArrayList<Line>();
 		int i, n, num1, num2;
 		Line x;
 		n = getPointsList(aretes).size();
-		System.out.println("N : " + n);
 		int[] CC = new int[points.size()];
 		for (i = 0; i < n; i++)
 			CC[getIndice(points, points.get(i))]=i;
@@ -198,11 +196,12 @@ public class DefaultTeam {
 
 
 	public Tree2D calculSteiner(ArrayList<Point> points, int edgeThreshold, ArrayList<Point> hitPoints) {
+		
 		this.points=points;
 		this.trees = new Tree2D[points.size()];
 		int[][] paths = calculShortestPaths(points, edgeThreshold);
-		ArrayList<Line> aretes = new ArrayList<Line>();
 		
+		ArrayList<Line> aretes = new ArrayList<Line>();
 		for(int i=0; i<hitPoints.size()-1; i++) {
 			Point P = hitPoints.get(i);
 			Point Q = hitPoints.get(i+1);
@@ -223,11 +222,9 @@ public class DefaultTeam {
 		this.Tree = new Tree2D(head.getP(), tmp2);
 		trees[getIndice(points, head.getP())]= this.Tree;
 
-		System.out.println("ARETES : " + aretes.size());
-		kruskal(aretes);
-		System.out.println("ARETES : " + aretes.size());
-		//LineToTree(aretes);
-		//System.out.println("ARETES : " + aretes.size());
+		//kruskal2(aretes);
+		LineToTree(aretes);
+		
 		return this.Tree;
 	}
 
