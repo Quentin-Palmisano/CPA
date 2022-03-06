@@ -303,7 +303,7 @@ public class DefaultTeam {
 		System.out.println("NB ARETES : " + aretes.size());
 		//aretes = kruskal3(aretes);
 		System.out.println("NB ARETES : " + aretes.size());
-		LineToTree2(aretes);
+		LineToTree(aretes);
 		
 		return this.Tree;
 	}
