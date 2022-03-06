@@ -74,7 +74,7 @@ public class DefaultTeam {
 		return paths;
 	}
 	
-	//Verifie si l'aretes de Point respectif p et q est dans l'ensemble des aretes de lines
+	//Verifie si l'arêtes de Point respectif p et q est dans l'ensemble des aretes de lines
 	public boolean contain(ArrayList<Line> lines, Point p, Point q) {
 		for(Line l : lines) {
 			if((l.getP()==p && l.getQ()==q)||(l.getP()==q && l.getQ()==p)) return true;
@@ -273,7 +273,6 @@ public class DefaultTeam {
 	
 	
 	
-	
 	public void addEdge(HashMap<Integer, ArrayList<Integer>> edges, int i, int j) {
 		var list = edges.get(i);
 		if(list == null) {
@@ -284,13 +283,15 @@ public class DefaultTeam {
 	}
 	
 	
+	// On précalcule les arêtes du graphe pour les mettre dans une hashmap pour un accès rapide
+	// La hashmap prend en clé l'indice d'un point et donne en valeur une liste des indices des points connectés
 	public HashMap<Integer, ArrayList<Integer>> createGeometricGraph(ArrayList<Point> points, int edgeThreshold) {
 		var edges = new HashMap<Integer,ArrayList<Integer>>();
 		
 		for(int i = 0; i < points.size(); i++) {
 			for(int j = 0; j < points.size(); j++) {
 				if (points.get(i).distance(points.get(j)) < edgeThreshold) {
-					addEdge(edges, i, j);
+					addEdge(edges, i, j); // On ajoute les arêtes dans les deux sens
 					addEdge(edges, j, i);
 				}
 			}
@@ -299,42 +300,50 @@ public class DefaultTeam {
 		return edges;
 	}
 	
+	// Sert à la fois à la priority queue et à la hashmap, malgré une utilité différente du champ point
 	class DijkstraData {
 		public DijkstraData(int point, double distance) {
 			this.point = point;
 			this.distance = distance;
 		}
-		int point; // le point actuel pour la priority queue, le point précédent dans la hashmap
-		double distance; // distance au point de départ
+		int point; // le point actuel pour la priority queue ou le point précédent dans la hashmap
+		double distance; // distance au point de départ de la recherche
 	}
 	
-	
+	// Implémentation de l'algorithme de Dijkstra qui s'arrête au premier point de l'arbre trouvé (celui le plus prêt, car on le trouve dans la priority queue des points les plus proches)
 	public double shortestPathToTree(ArrayList<Point> points, HashMap<Integer, ArrayList<Integer>> edges, HashSet<Integer> treePoints, int start, ArrayList<Integer> path) {
 		
+		// Priority queue qui stocke les points et leur distance du départ, et qui donne en premier le point le plus proche du point de départ
 		var pq = new PriorityQueue<DijkstraData>((a, b) -> {return a.distance < b.distance ? -1 : 1;});
+		// Hashmap qui stocke pour chaque point visité sa distance du départ et le point précédent dans son chemin
 		var map = new HashMap<Integer, DijkstraData>();
 		
 		pq.add(new DijkstraData(start, 0));
 		map.put(start, new DijkstraData(-1, 0));
 		
 		while(!pq.isEmpty()) {
+			// Le point actuel encore non visité le plus proche du départ
 			var u = pq.poll();
 			
+			// S'il est contenu dans la liste des points de l'arbre, on calcule le path et on retourne la distance
+			// On sait donc que c'est le chemin le plus court jusqu'au graphe
 			if(treePoints.contains(u.point)) {
 				int p = u.point;
 				while(p != -1) {
 					path.add(p);
-					p = map.get(p).point;
+					p = map.get(p).point; // On stocke l'arête précédente dans la hashmap
 				}
 				return u.distance;
 			}
 			
+			// Pour tous les voisins de u
 			var adjacents = edges.get(u.point);
 			for(int adjacent : adjacents) {
+				// On calcule la distance de adjacent au départ, en passant par u
 				double distance = u.distance + points.get(u.point).distance(points.get(adjacent));
 				
 				var v = map.get(adjacent);
-				if(v == null || v.distance > distance) {
+				if(v == null || v.distance > distance) { // si v n'a pas encore été exploré ou si la nouvelle distance est plus courte
 					v = new DijkstraData(u.point, distance);
 					map.put(adjacent, v);
 					pq.add(new DijkstraData(adjacent, v.distance));
@@ -348,6 +357,7 @@ public class DefaultTeam {
 		
 	}
 	
+	// Trouver un point spécifique dans l'arbre, pour récupérer son Tree2D
 	public Tree2D findPointInTree(Tree2D tree, Point point) {
 		
 		if(tree.getRoot().equals(point)) {
@@ -363,11 +373,13 @@ public class DefaultTeam {
 		
 	}
 	
-	public Tree2D addPathToTree(Tree2D tree, ArrayList<Point> points, ArrayList<Integer> path) {
+	// ajouter dans l'arbre un path calculé dans le dijkstra
+	public Tree2D addPathToTree(Tree2D tree, HashSet<Integer> treePoints, ArrayList<Point> points, ArrayList<Integer> path) {
 		var pathTree = findPointInTree(tree, points.get(path.get(0)));
 		
 		for(int i = 1; i<path.size(); i++) {
 			int p = path.get(i);
+			treePoints.add(p);
 			var ntree = new Tree2D(points.get(p), new ArrayList<>());
 			pathTree.getSubTrees().add(ntree);
 			pathTree = ntree;
@@ -377,6 +389,7 @@ public class DefaultTeam {
 		
 	}
 	
+	// trouver l'indice d'un point (on utilise que des int)
 	public int findPoint(ArrayList<Point> points, Point point) {
 		for(int i = 0; i<points.size(); i++) {
 			var p = points.get(i);
@@ -389,8 +402,11 @@ public class DefaultTeam {
 	
 	
 	public Tree2D calculSteinerDijktra(ArrayList<Point> points, int edgeThreshold, ArrayList<Point> hitPoints, int budget) {
+		
+		// Hashmap contenant les arêtes
 		var edges = createGeometricGraph(points, edgeThreshold);
 		
+		// HashSet contenant tous les points de l'arbre
 		var treePoints = new HashSet<Integer>();
 		
 		var start = hitPoints.get(0);
@@ -401,42 +417,42 @@ public class DefaultTeam {
 		
 		double totalDistance = 0;
 		
+		// tant qu'il y a de points à ajouter (au maximum)
 		for(int h = 1; h<hitPoints.size(); h++) {
+			
+			// On cherche le point le plus près de l'arbre, soit la distance minimale retournée par shortestPathTotree, et son path
 			double minDistance = 0;
 			ArrayList<Integer> bestPath = new ArrayList<>();
 			
 			for(int i = 0; i<hitPoints.size(); i++) {
 				var hitPoint = findPoint(points, hitPoints.get(i));
 				if(treePoints.contains(hitPoint)) continue;
+				
 				var path = new ArrayList<Integer>();
 				double distance = shortestPathToTree(points, edges, treePoints, hitPoint, path);
 				//System.out.println("point " + i + " distance " + distance + " pathsize " + path.size());
-				if((minDistance == 0.0 || distance < minDistance) && (distance != -1 && path.size() > 1)) {
+				
+				if((minDistance == 0.0 || distance < minDistance) && distance != -1) {
 					minDistance = distance;
 					bestPath = path;
 				}
 			}
 			
-			if(minDistance == 0.0) return tree;
+			// Il n'y a plus rien à ajouter
+			if(minDistance == 0.0) break;
 			
 			totalDistance += minDistance;
 			
+			// Si la distance minimale dépasse le budget alors il n'y a plus de point à ajouter
 			if(totalDistance > budget && budget > 0) {
-				return tree;
+				break;
 			}
 			
 			//System.out.println("adding point " + (h+1) + " distance " + minDistance + " pathsize " + bestPath.size());
 			
-			tree = addPathToTree(tree, points, bestPath);
+			tree = addPathToTree(tree, treePoints, points, bestPath);
 			
-
-			for(int p : bestPath) {
-				treePoints.add(p);
-			}
 		}
-		
-
-		System.out.println(totalDistance);
 		
 		return tree;
 	}
