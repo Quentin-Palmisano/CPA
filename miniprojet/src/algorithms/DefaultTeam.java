@@ -131,20 +131,25 @@ public class DefaultTeam {
 		if(aretes.isEmpty()) return new Tree2D(new Point(), new ArrayList<Tree2D>());
 		for(Line l : aretes) {
 			Tree2D root = trees[getIndice(points, l.getP())];
-			Tree2D dest = trees[getIndice(points, l.getP())];
+			Tree2D dest = trees[getIndice(points, l.getQ())];
 			if(root==null) {
 				Tree2D tmp = null;
 				if(dest==null) {
-					tmp = new Tree2D(l.getP(), new ArrayList<>());
+					Tree2D t = new Tree2D(l.getQ(), new ArrayList<>());
+					ArrayList<Tree2D> array = new ArrayList<Tree2D>();
+					array.add(t);
+					tmp = new Tree2D(l.getP(), array);
 				}else {
-					tmp = new Tree2D(l.getP(), dest.getSubTrees());
+					ArrayList<Tree2D> array = new ArrayList<Tree2D>();
+					array.add(dest);
+					tmp = new Tree2D(l.getP(), array);
 				}
 				trees[getIndice(points, l.getP())]= tmp;
 			}else {
 				Tree2D tmp = null;
 				if(dest==null) {
 					tmp = new Tree2D(l.getQ(), new ArrayList<>());
-					trees[getIndice(points, l.getQ())]= tmp;
+					trees[getIndice(points, l.getQ())] = tmp;
 					root.getSubTrees().add(tmp);
 				}else {
 					if(!root.getSubTrees().contains(dest)) root.getSubTrees().add(dest);
@@ -298,7 +303,7 @@ public class DefaultTeam {
 		System.out.println("NB ARETES : " + aretes.size());
 		//aretes = kruskal3(aretes);
 		System.out.println("NB ARETES : " + aretes.size());
-		LineToTree(aretes);
+		LineToTree2(aretes);
 		
 		return this.Tree;
 	}
