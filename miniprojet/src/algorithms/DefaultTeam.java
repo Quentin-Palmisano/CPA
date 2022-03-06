@@ -270,6 +270,10 @@ public class DefaultTeam {
 		}
 	}
 	
+	
+	
+	
+	
 	public void addEdge(HashMap<Integer, ArrayList<Integer>> edges, int i, int j) {
 		var list = edges.get(i);
 		if(list == null) {
@@ -330,16 +334,11 @@ public class DefaultTeam {
 				double distance = u.distance + points.get(u.point).distance(points.get(adjacent));
 				
 				var v = map.get(adjacent);
-				if(v == null) {
+				if(v == null || v.distance > distance) {
 					v = new DijkstraData(u.point, distance);
 					map.put(adjacent, v);
-				} else if(v.distance > distance) {
-					v.distance = distance;
-				} else {
-					continue;
+					pq.add(new DijkstraData(adjacent, v.distance));
 				}
-				
-				pq.add(new DijkstraData(adjacent, v.distance));
 				
 			}
 			
@@ -389,7 +388,7 @@ public class DefaultTeam {
 	}
 	
 	
-	public Tree2D calculSteinerDijktra(ArrayList<Point> points, int edgeThreshold, ArrayList<Point> hitPoints) {
+	public Tree2D calculSteinerDijktra(ArrayList<Point> points, int edgeThreshold, ArrayList<Point> hitPoints, int budget) {
 		var edges = createGeometricGraph(points, edgeThreshold);
 		
 		var treePoints = new HashSet<Integer>();
@@ -400,9 +399,12 @@ public class DefaultTeam {
 		Tree2D tree = new Tree2D(start, new ArrayList<>());
 		treePoints.add(startIndex);
 		
+		double totalDistance = 0;
+		
 		for(int h = 1; h<hitPoints.size(); h++) {
 			double minDistance = 0;
 			ArrayList<Integer> bestPath = new ArrayList<>();
+			
 			for(int i = 0; i<hitPoints.size(); i++) {
 				var hitPoint = findPoint(points, hitPoints.get(i));
 				if(treePoints.contains(hitPoint)) continue;
@@ -417,14 +419,24 @@ public class DefaultTeam {
 			
 			if(minDistance == 0.0) return tree;
 			
+			totalDistance += minDistance;
+			
+			if(totalDistance > budget && budget > 0) {
+				return tree;
+			}
+			
 			//System.out.println("adding point " + (h+1) + " distance " + minDistance + " pathsize " + bestPath.size());
 			
 			tree = addPathToTree(tree, points, bestPath);
+			
 
 			for(int p : bestPath) {
 				treePoints.add(p);
 			}
 		}
+		
+
+		System.out.println(totalDistance);
 		
 		return tree;
 	}
@@ -470,22 +482,10 @@ public class DefaultTeam {
 	*/
 	
 	public Tree2D calculSteiner(ArrayList<Point> points, int edgeThreshold, ArrayList<Point> hitPoints) {
-		return calculSteinerDijktra(points, edgeThreshold, hitPoints);
+		return calculSteinerDijktra(points, edgeThreshold, hitPoints, -1);
 	}
 
 	public Tree2D calculSteinerBudget(ArrayList<Point> points, int edgeThreshold, ArrayList<Point> hitPoints) {
-		
-		//REMOVE >>>>>
-		Tree2D leafX = new Tree2D(new Point(700,400),new ArrayList<Tree2D>());
-		Tree2D leafY = new Tree2D(new Point(700,500),new ArrayList<Tree2D>());
-		Tree2D leafZ = new Tree2D(new Point(800,450),new ArrayList<Tree2D>());
-		ArrayList<Tree2D> subTrees = new ArrayList<Tree2D>();
-		subTrees.add(leafX);
-		subTrees.add(leafY);
-		subTrees.add(leafZ);
-		Tree2D steinerTree = new Tree2D(new Point(750,450),subTrees);
-		//<<<<< REMOVE
-
-		return steinerTree;
+		return calculSteinerDijktra(points, edgeThreshold, hitPoints, 1664);
 	}
 }
