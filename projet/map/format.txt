@@ -1,0 +1,4 @@
+X : mur incassable
+O : mur cassable
+p : joueur 1
+q : joueur 2
