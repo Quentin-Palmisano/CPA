@@ -65,11 +65,123 @@ public class DefaultTeam {
 		return new Line(p,q);
 	}
 	
+	//EXERCICE 4
+	/*
+	public Circle calculCercleMin(ArrayList<Point> points) {
+	    if (points.isEmpty()) {
+	      return null;
+	    }
+
+    Point center=points.get(0);
+    int radius=100;
+
+    Line l = calculDiametre(points);
+    Point p = l.getP();
+    Point q = l.getQ();
+    double tmp1 = p.getX()-q.getX();
+	double tmp2 = p.getY()-q.getY();
+    radius = (int)((Math.sqrt(tmp1*tmp1+tmp2*tmp2))/2);
+    
+    center = centre(a, b);
+
+    return new Circle(center,radius);
+  }
+*/
+
+	//EXERCICE 5
+	/*
 	public Circle calculCercleMin(ArrayList<Point> points) {
 		if (points.isEmpty()) {
 			return null;
 		}
 
-		return WelzlCircle.minCircle(points);
+		Point dummy = points.get((int)Math.random()*points.size());
+		Point P = new Point();
+		Point Q = new Point();
+		double d = 0;
+		for(Point p : points) {
+			points_bis.add(p);
+			double tmp = distance(dummy, p);
+			if(tmp>d) {
+				P=p;
+				d=tmp;
+			}
+		}
+		d=0;
+		for(Point p : points) {
+			double tmp = distance(P, p);
+			if(tmp>d) {
+				Q=p;
+				d=tmp;
+			}
+		}
+		Point C = centre(P, Q);
+		double RAYON = Math.sqrt(distance(P, C));
+		Circle CERCLE = new Circle(C,(int)RAYON);
+		points_bis.remove(P);
+		points_bis.remove(Q);
+		while(!points_bis.isEmpty()) {
+			Point S = points_bis.get(0);
+			double CS = Math.sqrt(distance(C, S));
+			if(CS<=RAYON) {
+				points_bis.remove(S);
+			}else {
+				RAYON = (RAYON+CS)/2;
+				double ALPHA = RAYON/CS;
+				double BETA = 1 - ALPHA;
+				double Cx = ALPHA*C.getX()+BETA*S.getX();
+				double Cy = ALPHA*C.getY()+BETA*S.getY();
+				C = new Point((int)Cx, (int)Cy);
+				CERCLE = new Circle(C, (int)RAYON);
+				points_bis.remove(S);
+			}
+		}
+		
+		return new Circle(C,(int)RAYON);
 	}
+	*/
+	
+	//EXERCICE 6
+	
+		public Circle calculCercleMin(ArrayList<Point> points) {
+			if (points.isEmpty()) {
+				return null;
+			}
+			ArrayList<Point> points_bis = new ArrayList<Point>();
+			
+			Point center=points.get(0);
+			int radius=100;
+
+			
+			for(Point p : points) {
+				points_bis.add(p);
+			}
+			Line l = calculDiametre(points);
+			Point P = l.getP();
+			Point Q = l.getQ();
+			Point C = centre(P, Q);
+			double RAYON = Math.sqrt(distance(P, C));
+			Circle CERCLE = new Circle(C,(int)RAYON);
+			points_bis.remove(P);
+			points_bis.remove(Q);
+			while(!points_bis.isEmpty()) {
+				Point S = points_bis.get(0);
+				double CS = Math.sqrt(distance(C, S));
+				if(CS<=RAYON) {
+					points_bis.remove(S);
+				}else {
+					RAYON = (RAYON+CS)/2;
+					double ALPHA = RAYON/CS;
+					double BETA = 1 - ALPHA;
+					double Cx = ALPHA*C.getX()+BETA*S.getX();
+					double Cy = ALPHA*C.getY()+BETA*S.getY();
+					C = new Point((int)Cx, (int)Cy);
+					CERCLE = new Circle(C, (int)RAYON);
+					points_bis.remove(S);
+				}
+			}
+			
+			return new Circle(C,(int)RAYON);
+		}
+		
 }
