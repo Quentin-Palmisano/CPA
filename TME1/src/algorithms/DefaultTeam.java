@@ -71,7 +71,8 @@ public class DefaultTeam {
 	//   renvoie un cercle couvrant tout point de la liste, de rayon minimum.
 	
 	//EXERCICE 4
-	/*public Circle calculCercleMin(ArrayList<Point> points) {
+	/*
+	public Circle calculCercleMin(ArrayList<Point> points) {
 	    if (points.isEmpty()) {
 	      return null;
 	    }
@@ -89,7 +90,8 @@ public class DefaultTeam {
     center = centre(a, b);
 
     return new Circle(center,radius);
-  }*/
+  }
+*/
 
 	//EXERCICE 5
 	/*
@@ -145,9 +147,11 @@ public class DefaultTeam {
 		}
 		
 		return new Circle(C,(int)RAYON);
-	}*/
+	}
+	*/
 	
 	//EXERCICE 6
+	
 		public Circle calculCercleMin(ArrayList<Point> points) {
 			if (points.isEmpty()) {
 				return null;
@@ -188,4 +192,5 @@ public class DefaultTeam {
 			
 			return new Circle(C,(int)RAYON);
 		}
+		
 }

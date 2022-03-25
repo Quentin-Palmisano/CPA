@@ -1,6 +1,6 @@
 */build
-*/jars
 */META-INF
 */bin
 */.gradle
 /bin/
+*.class
