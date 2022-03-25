@@ -30,7 +30,7 @@ public class DefaultTeam {
 	public double distance(Point a, Point b) {
 		double tmp1 = a.getX()-b.getX();
 		double tmp2 = a.getY()-b.getY();
-		return tmp1*tmp1 + tmp2*tmp2;
+		return Math.sqrt(tmp1*tmp1 + tmp2*tmp2);
 	}
 	
 	public Point centre(Point a, Point b){
@@ -53,9 +53,7 @@ public class DefaultTeam {
 		double d = 0;
 		for(Point p1 : points) {
 			for(Point p2 : points) {
-				double tmp1 = p1.getX()-p2.getX();
-				double tmp2 = p1.getY()-p2.getY();
-				double d2 = tmp1*tmp1 + tmp2*tmp2;
+				double d2 = distance(p1, p2);
 				if (d2>d) {
 					p=p1;
 					q=p2;
@@ -66,9 +64,6 @@ public class DefaultTeam {
 
 		return new Line(p,q);
 	}
-
-	// calculCercleMin: ArrayList<Point> --> Circle
-	//   renvoie un cercle couvrant tout point de la liste, de rayon minimum.
 	
 	//EXERCICE 4
 	/*
@@ -99,10 +94,6 @@ public class DefaultTeam {
 		if (points.isEmpty()) {
 			return null;
 		}
-		ArrayList<Point> points_bis = new ArrayList<Point>();
-		
-		Point center=points.get(0);
-		int radius=100;
 
 		Point dummy = points.get((int)Math.random()*points.size());
 		Point P = new Point();
