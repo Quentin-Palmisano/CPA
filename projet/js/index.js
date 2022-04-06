@@ -1,8 +1,8 @@
-function drawImage(nom) {
+function drawImage(nom, x, y) {
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
-    var img = document.getElementById("img");
-    ctx.drawImage(img, 300, 10);
+    var img = document.getElementById(nom);
+    ctx.drawImage(img, x, y);
 }
 
 function drawText(text, x, y){
@@ -46,14 +46,19 @@ function randomMap(height, width){
 function drawMap(tab){
     for(var i= 0; i < tab.length; i++) {
         for(var j= 0; j < tab[i].length; j++) {
-            drawText(tab[i][j], i*30, (j+1)*30);
+            if(tab[i][j]=='X'){
+               drawImage("block_incassable", i*43, j*38);
+            } else if(tab[i][j]=='O'){
+                drawImage("block_cassable", i*43, j*38);
+            } else if(tab[i][j]==' '){
+                drawImage("vide", i*43, j*38);
+                }
         }
     }
 
 }
 
 window.addEventListener("load", function (event) {
-    //addImage("../test.png");
     var map = randomMap(11,13);
     drawMap(map);
 });
