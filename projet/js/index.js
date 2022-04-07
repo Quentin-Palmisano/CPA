@@ -1,38 +1,59 @@
+class Player {
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
+      this.dir = 0;
+      this.lives = 3;
+      this.nb_bombe = 1;
+      this.puissance = 3;
+    }
+}
+
 let map;
 let bombes;
+let explosion;
+let percent = 60;
 let height=11;
 let width=13;
-let P1x=1;
-let P1y=1;
-let P2x=height-2;
-let P2y=width-2;
+let tile_height=38;
+let tile_width=38;
+const player1 = new Player(1,1);
+const player2 = new Player(height-2, width-2);
+let canvas = document.getElementById("myCanvas");
+let context = canvas.getContext("2d");
+let start = null;
+
+function step() {
+    drawMap();
+    requestAnimationFrame(step);
+}
+
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
 function drawImage(nom, x, y) {
-    var c = document.getElementById("myCanvas");
-    var ctx = c.getContext("2d");
     var img = document.getElementById(nom);
-    ctx.drawImage(img, x, y);
+    context.drawImage(img, y*tile_height, x*tile_width);
 }
 
 function drawText(text, x, y){
-var c = document.getElementById("myCanvas");
-var ctx = c.getContext("2d");
-ctx.font = "30px Arial";
-ctx.fillText(text, x, y);
+context.font = "30px Arial";
+context.fillText(text, x, y);
 }
 
-function randomMap(x){
+function randomMap(){
     map = new Array(height);
     bombes = new Array(height);
+    explosion = new Array(height);
     for(var i=0; i<height; i++){
         map[i] = new Array(width);
         bombes[i] = new Array(width);
+        explosion[i] = new Array(width);
         for(var j=0; j<width; j++){
-            bombes[i][j] = false;
+            bombes[i][j] = 0;
+            explosion[i][j] = 0;
             if(j==0 || j==width-1 || i==0 || i==height-1){
                 map[i][j] = 'X';
             } else if((i==1 && (j==1||j==2||j==width-3||j==width-2))
@@ -46,7 +67,7 @@ function randomMap(x){
                     map[i][j] = 'X';
                 } else {
                     var rand = Math.floor(Math.random() * 100);
-                    if(rand<x){
+                    if(rand<percent){
                         map[i][j] = 'O';
                     }else{
                         map[i][j] = ' ';
@@ -59,54 +80,120 @@ function randomMap(x){
     return map;
 }
 
-async function drawPlayer(map){
-    var i = 0;
-    while(true){
-        drawMap(map);
-        i++;
-        drawImage("player1_"+((i%14)+1), 0, 0);
-        await sleep(300);
-    }
-}
-
 function drawMap(){
+    p1 = document.getElementById("player1")
+    p1.innerHTML = "player 1 : "+player1.lives;
+    p2 = document.getElementById("player2")
+    p2.innerHTML = "player 2 : "+player2.lives;
     
     for(var i= 0; i < map.length; i++) {
         for(var j= 0; j < map[i].length; j++) {
             if(map[i][j]=='X'){
-               drawImage("block_incassable", i*43, j*38);
+               drawImage("block_incassable", i, j);
             } else if(map[i][j]=='O'){
-                drawImage("block_cassable", i*43, j*38);
+                drawImage("block_cassable", i, j);
             } else if(map[i][j]==' '){
-                drawImage("case", i*43, j*38);
+                drawImage("case", i, j);
+            }
+            if(explosion[i][j]==1){
+                drawImage("fire4_center", i, j);
+            } else if(explosion[i][j]==2){
+                drawImage("fire4_left_middle", i, j);
+            } else if(explosion[i][j]==3){
+                drawImage("fire4_left_left", i, j);
+            } else if(explosion[i][j]==4){
+                drawImage("fire4_right_middle", i, j);
+            } else if(explosion[i][j]==5){
+                drawImage("fire4_right_right", i, j);
+            } else if(explosion[i][j]==6){
+                drawImage("fire4_up_middle", i, j);
+            } else if(explosion[i][j]==7){
+                drawImage("fire4_up_top", i, j);
+            } else if(explosion[i][j]==8){
+                drawImage("fire4_down_middle", i, j);
+            } else if(explosion[i][j]==9){
+                drawImage("fire4_down_bottom", i, j);
             }
             if(bombes[i][j]==1){
-                drawImage("bombe1", i*43, j*38);
+                drawImage("bombe1", i, j);
             } else if(bombes[i][j]==2){
-                drawImage("bombe2", i*43, j*38);
+                drawImage("bombe2", i, j);
             } else if(bombes[i][j]==3){
-                drawImage("bombe3", i*43, j*38);
+                drawImage("bombe3", i, j);
             }
-            if(P1x==i&& P1y==j){
-                drawImage("player1_1", i*43, j*38);
+            if(player1.x==i&& player1.y==j){
+                drawImage("player1_1", i, j);
             }
-            if(P2x==i && P2y==j){
-                drawImage("player2", i*43, j*38);
+            if(player2.x==i && player2.y==j){
+                drawImage("player2_1", i, j);
             }
         }
     }
-    //drawImage("player2", 9*43, 11*38);
 }
 
-async function putbombe(x, y){
-    bombes[x][y]=1;
-    await sleep(1000);
-    bombes[x][y]=2;
-    await sleep(1000);
-    bombes[x][y]=3;
-    await sleep(1000);
-    bombes[x][y]=0;
+function explose_bis(x,y,dx,dy,pow, middle, end, b){
+    for(var i=1; i<=pow; i++){
+        let px = x+i*dx;
+        let py = y+i*dy;
+        if(!b && explosion[px][py]==0)break;
+        if(map[px][py]==' '){
+            if(b){
+                explosion[px][py] = (pow==i ? end : middle);
+                if(player1.x==px && player1.y==py) player1.lives=player1.lives-1;
+                if(player2.x==px && player2.y==py) player2.lives=player2.lives-1;
+            }else{
+                explosion[px][py] = 0;
+            }
+        } else if(map[px][py] == "O") {
+            map[px][py]=' ';
+            if(b){
+                explosion[px][py] = end;
+            }else{
+                explosion[px][py] = 0;
+            }
+            break;
+        } else {
+            break;
+        }
+    }
+}
 
+async function explose(x, y, pow){
+    if(map[x][y]==' '){
+        explosion[x][y]=1;
+    }
+    
+    if(player1.x==x && player1.y==y) player1.lives=player1.lives-1;
+    if(player2.x==x && player2.y==y) player2.lives=player2.lives-1;
+    explose_bis(x,y,0,-1,pow,2,3,true);
+    explose_bis(x,y,0,1,pow,4,5,true);
+    explose_bis(x,y,-1,0,pow,6,7,true);
+    explose_bis(x,y,1,0,pow,8,9,true);
+
+    await sleep(500);
+    explosion[x][y]=0;
+
+    explose_bis(x,y,0,-1,pow,2,3,false);
+    explose_bis(x,y,0,1,pow,4,5,false);
+    explose_bis(x,y,-1,0,pow,6,7,false);
+    explose_bis(x,y,1,0,pow,8,9,false);
+}
+
+async function putbombe(x, y, pow){
+    bombes[x][y]=1;
+    await sleep(500);
+    bombes[x][y]=2;
+    await sleep(500);
+    bombes[x][y]=3;
+    await sleep(500);
+    bombes[x][y]=1;
+    await sleep(500);
+    bombes[x][y]=2;
+    await sleep(500);
+    bombes[x][y]=3;
+    await sleep(500);
+    bombes[x][y]=0;
+    explose(x, y, pow);
 }
 
 function checkKey(e) {
@@ -114,61 +201,61 @@ function checkKey(e) {
 
     if (e.keyCode == '38') {
         // up arrow
-        if(P1y>1 && map[P1x][P1y-1]==' '){
-            P1y=P1y-1;
+        if(player1.x>1 && map[player1.x-1][player1.y]==' ' && bombes[player1.x-1][player1.y]==0){
+            player1.x=player1.x-1;
         }
     }
     else if (e.keyCode == '40') {
         // down arrow
-        if(P1y<width-2 && map[P1x][P1y+1]==' '){
-            P1y=P1y+1;
+        if(player1.x<height-2 && map[player1.x+1][player1.y]==' ' && bombes[player1.x+1][player1.y]==0){
+            player1.x=player1.x+1;
         }
     }
     else if (e.keyCode == '37') {
         // left arrow
-        if(P1x>1 && map[P1x-1][P1y]==' '){
-            P1x=P1x-1;
+        if(player1.y>1 && map[player1.x][player1.y-1]==' ' && bombes[player1.x][player1.y-1]==0){
+            player1.y=player1.y-1;
         }
     }
     else if (e.keyCode == '39') {
         // right arrow
-        if(P1x<height-2 && map[P1x+1][P1y]==' '){
-            P1x=P1x+1;
+        if(player1.y<width-2 && map[player1.x][player1.y+1]==' ' && bombes[player1.x][player1.y+1]==0){
+            player1.y=player1.y+1;
         }
     }else if (e.keyCode == '96') {
         // 0 numpad
-        putbombe(P2x, P2y);
+        putbombe(player1.x, player1.y, player1.puissance);
     }else if (e.keyCode == '90') {
         // Z
-        if(P2y>1 && map[P2x][P2y-1]==' '){
-            P2y=P2y-1;
+        if(player2.x>1 && map[player2.x-1][player2.y]==' ' && bombes[player2.x-1][player2.y]==0){
+            player2.x=player2.x-1;
         }
     }else if (e.keyCode == '83') {
         // S
-        if(P2y<width-2 && map[P2x][P2y+1]==' '){
-            P2y=P2y+1;
+        if(player2.x<height-2 && map[player2.x+1][player2.y]==' ' && bombes[player2.x+1][player2.y]==0){
+            player2.x=player2.x+1;
         }
     }else if (e.keyCode == '81') {
         // Q
-        if(P2x>1 && map[P2x-1][P2y]==' '){
-            P2x=P2x-1;
+        if(player2.y>1 && map[player2.x][player2.y-1]==' ' && bombes[player2.x][player2.y-1]==0){
+            player2.y=player2.y-1;
         }
     }else if (e.keyCode == '68') {
         // D
-        if(P2x<height-2 && map[P2x+1][P2y]==' '){
-            P2x=P2x+1;
+        if(player2.y<width-2 && map[player2.x][player2.y+1]==' ' && bombes[player2.x][player2.y+1]==0){
+            player2.y=player2.y+1;
         }
     }else if (e.keyCode == '32') {
         // space
-        putbombe(P2x, P2y);
+        putbombe(player2.x, player2.y, player2.puissance);
     }
-    drawMap();
 }
 
 
 window.addEventListener("load", function (event) {
+    canvas.width=width*tile_width;
+    canvas.height=height*tile_height;
     document.onkeydown = checkKey;
-    randomMap(20);
-    drawMap();
-    //drawPlayer(map)
+    randomMap();
+    requestAnimationFrame(step);
 });
