@@ -19,12 +19,18 @@ class Player {
         this.y = y;
         this.px = tile_height * x;
         this.py = tile_width * y;
-        this.dir = 0;
+        this.dx = 0;
+        this.dy = 0;
+        this.is_moving = false;
         this.lives = 3;
         this.nb_bombe = 1;
         this.nb_bombe_pose = 0;
         this.puissance = 1;
-        this.speed = 3;
+        this.speed = 1;
+        this.up = false;
+        this.down = false;
+        this.right = false;
+        this.left = false;
     }
 }
 //tableau des elements mur, block cassable, sol
@@ -175,6 +181,7 @@ function drawMap() {
 
         }
     }
+
     drawByPixel("player1_1", player1.px, player1.py);
     drawByPixel("player2_1", player2.px, player2.py);
 }
@@ -182,11 +189,11 @@ function drawMap() {
 function randompowerup(px, py) {
     var rand = Math.floor(Math.random() * 100);
     map[px][py] = ' ';
-    if (rand < 12) {
+    if (rand < 20) {
         powerup[px][py] = 1;
-    } else if (rand < 24) {
+    } else if (rand < 40) {
         powerup[px][py] = 2;
-    } else if (rand < 36) {
+    } else if (rand < 60) {
         powerup[px][py] = 3;
     }
 }
@@ -243,18 +250,10 @@ async function explose(x, y, pow) {
 async function putbombe(x, y, pow, player) {
     if (player.nb_bombe_pose < player.nb_bombe && bombes[x][y] == 0) {
         player.nb_bombe_pose = player.nb_bombe_pose + 1;
-        bombes[x][y] = 1;
-        await sleep(500);
-        bombes[x][y] = 2;
-        await sleep(500);
-        bombes[x][y] = 3;
-        await sleep(500);
-        bombes[x][y] = 1;
-        await sleep(500);
-        bombes[x][y] = 2;
-        await sleep(500);
-        bombes[x][y] = 3;
-        await sleep(500);
+        for (var i = 0; i < 12; i++) {
+            bombes[x][y] = 1 + i % 3;
+            await sleep((13 - i) * 40)
+        }
         bombes[x][y] = 0;
         player.nb_bombe_pose = player.nb_bombe_pose - 1;
         explose(x, y, pow);
@@ -262,125 +261,134 @@ async function putbombe(x, y, pow, player) {
 }
 
 function checkpowerup(player) {
-    if (powerup[player.x][player.y] == 1 && player.nb_bombe < max_bombe){
+    if (powerup[player.x][player.y] == 1 && player.nb_bombe < max_bombe) {
         player.nb_bombe = player.nb_bombe + 1;
-    }else if (powerup[player.x][player.y] == 2 && player.puissance < max_puissance){
+    } else if (powerup[player.x][player.y] == 2 && player.puissance < max_puissance) {
         player.puissance = player.puissance + 1;
-    }else if (powerup[player.x][player.y] == 3 && player.speed < max_speed){
+    } else if (powerup[player.x][player.y] == 3 && player.speed < max_speed) {
         player.speed = player.speed + 1;
     }
     powerup[player.x][player.y] = 0;
 }
 
-function checkKey(e) {
+function isEmpty(x, y) {
+    return map[x][y] == ' ' && bombes[x][y] == 0;
+}
+
+function turn(player, dx, dy) {
+
+    let nx = player.x + dx;
+    let ny = player.y + dy;
+
+    if(!isEmpty(nx, ny)){
+        return false;
+    }
+
+    if(player.dx == dx && player.dy == dy){
+        return false;
+    }
+
+    player.dx = dx;
+    player.dy = dy;
+
+    return true;
+
+}
+
+function move(player) {
+
+    let nx = player.x + player.dx;
+    let ny = player.y + player.dy;
+
+    if(isEmpty(nx, ny)){
+        
+        player.y = ny;
+        player.py = player.y * tile_width;
+
+        player.x = nx;
+        player.px = player.x * tile_height;
+
+    }
+
+}
+
+async function movePlayerSmooth(player) {
+    if(player.is_moving) return;
+    player.is_moving = true;
+    while (true) {
+        var x = player.x;
+        var y = player.y;
+        if (player.up && turn(player, -1, 0)) {
+
+        } else if (player.down && turn(player, 1, 0)) {
+
+        } else if (player.left && turn(player, 0, -1)) {
+
+        } else if (player.right && turn(player, 0, 1)) {
+
+        } else if(!player.right && !player.left && !player.up && !player.down){
+            player.dx = 0;
+            player.dy = 0;
+            player.is_moving = false;
+            return;
+        }
+
+        move(player);
+
+        checkpowerup(player);
+        await sleep(1 + (max_speed + 1 - player.speed) * 100);
+    }
+}
+
+function checkKey(e, b) {
     e = e || window.event;
+
 
     if (e.keyCode == '38') {
         // up arrow
-        if (player1.x > 1 && map[player1.x - 1][player1.y] == ' ' && bombes[player1.x - 1][player1.y] == 0) {
-            player1.x = player1.x - 1;
-            player1.px = player1.x * tile_height;
-            checkpowerup(player1);
-        }
+        player1.up = b;
+        console.log(player1.up);
     }
     else if (e.keyCode == '40') {
         // down arrow
-        if (player1.x < height - 2 && map[player1.x + 1][player1.y] == ' ' && bombes[player1.x + 1][player1.y] == 0) {
-            player1.x = player1.x + 1;
-            player1.px = player1.x * tile_height;
-            checkpowerup(player1);
-        }
+        player1.down = b;
     }
     else if (e.keyCode == '37') {
         // left arrow
-        if (player1.y > 1 && map[player1.x][player1.y - 1] == ' ' && bombes[player1.x][player1.y - 1] == 0) {
-            player1.y = player1.y - 1;
-            player1.py = player1.y * tile_width;
-            checkpowerup(player1);
-        }
+        player1.left = b;
     }
     else if (e.keyCode == '39') {
         // right arrow
-        if (player1.y < width - 2 && map[player1.x][player1.y + 1] == ' ' && bombes[player1.x][player1.y + 1] == 0) {
-            player1.y = player1.y + 1;
-            player1.py = player1.y * tile_width;
-            checkpowerup(player1);
-        }
+        player1.right = b;
     } else if (e.keyCode == '96') {
         // 0 numpad
-        putbombe(player1.x, player1.y, player1.puissance, player1);
+        if(b) putbombe(player1.x, player1.y, player1.puissance, player1);
     } else if (e.keyCode == '90') {
         // Z
-        checkpowerup(player2);
-        if (player2.py == tile_width * player2.y) {
-            if (player2.x > 1 && map[player2.x - 1][player2.y] == ' ' && bombes[player2.x - 1][player2.y] == 0) {
-                if (player2.px - player2.speed >= tile_height * (player2.x - 1)) {
-                    player2.px = player2.px - player2.speed;
-                } else if (player2.px - player2.speed < tile_height * (player2.x - 1)) {
-                    player2.x = player2.x - 1;
-                    player2.px = tile_height * player2.x;
-                }
-            } else {
-                player2.px = player2.x * tile_height;
-            }
-        }
+        player2.up = b;
     } else if (e.keyCode == '83') {
         // S
-        checkpowerup(player2);
-        if (player2.py == tile_width * player2.y) {
-            if (player2.x < height - 2 && map[player2.x + 1][player2.y] == ' ' && bombes[player2.x + 1][player2.y] == 0) {
-                if (player2.px + player2.speed <= tile_height * (player2.x + 1)) {
-                    player2.px = player2.px + player2.speed;
-                } else if (player2.px + player2.speed > tile_height * (player2.x + 1)) {
-                    player2.x = player2.x + 1;
-                    player2.px = tile_height * player2.x;
-                }
-            } else {
-                player2.px = player2.x * tile_height;
-            }
-        }
-        
+        player2.down = b;
     } else if (e.keyCode == '81') {
         // Q
-        checkpowerup(player2);
-        if (player2.px == tile_height * player2.x) {
-            if (player2.y > 1 && map[player2.x][player2.y - 1] == ' ' && bombes[player2.x][player2.y - 1] == 0) {
-                if (player2.py - player2.speed >= tile_width * (player2.y - 1)) {
-                    player2.py = player2.py - player2.speed;
-                } else if (player2.py - player2.speed < tile_width * (player2.y - 1)) {
-                    player2.y = player2.y - 1;
-                    player2.py = tile_width * player2.y;
-                }
-            } else {
-                player2.py = player2.y * tile_width;
-            }
-        }
+        player2.left = b;
     } else if (e.keyCode == '68') {
         // D
-        checkpowerup(player2);
-        if (player2.px == tile_height * player2.x) {
-            if (player2.y < width - 2 && map[player2.x][player2.y + 1] == ' ' && bombes[player2.x][player2.y + 1] == 0) {
-                if (player2.py + player2.speed <= tile_width * (player2.y + 1)) {
-                    player2.py = player2.py + player2.speed;
-                } else if (player2.py + player2.speed > tile_width * (player2.y + 1)) {
-                    player2.y = player2.y + 1;
-                    player2.py = tile_width * player2.y;
-                }
-            } else {
-                player2.py = player2.y * tile_width;
-            }
-        }
+        player2.right = b;
     } else if (e.keyCode == '32') {
         // space
-        putbombe(player2.x, player2.y, player2.puissance, player2);
+        if(b) putbombe(player2.x, player2.y, player2.puissance, player2);
     }
+    movePlayerSmooth(player1);
+    movePlayerSmooth(player2);
 }
 
 
 window.addEventListener("load", function (event) {
     canvas.width = width * tile_width;
     canvas.height = height * tile_height;
-    document.onkeydown = checkKey;
+    document.onkeydown = (e) => { checkKey(e, true); };
+    document.onkeyup = (e) => { checkKey(e, false); };
     randomMap();
     requestAnimationFrame(step);
 });
