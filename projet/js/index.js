@@ -43,22 +43,24 @@ let explosion;
 //tableau des power up
 let powerup;
 
-const player1 = new Player(1, 1);
-const player2 = new Player(height - 2, width - 2);
+let player1 = new Player(1, 1);
+let player2 = new Player(height - 2, width - 2);
 
 //nombre maximum de powerup par joueur
 let max_bombe = 10;
 let max_puissance = 10;
 let max_speed = 10;
 
-async function loading(menu, game, load, loadbar){
+async function loading(menu, game, load, loadbar, b){
     load.style.display = "block";
-    for(var i=1; i<=100; i++){
-        var rand = Math.floor(Math.random() * 100);
-        loadbar.value = i;
-        if(rand<10) await sleep(100*rand);
-        if(rand>90) i = i+100-rand;
-        await sleep(50);
+    if(b){
+        for(var i=1; i<=100; i++){
+            var rand = Math.floor(Math.random() * 100);
+            loadbar.value = i;
+            if(rand<10) await sleep(100*rand);
+            if(rand>90) i = i+100-rand;
+            await sleep(50);
+        }
     }
     menu.style.display = "none";
     game.style.display = "block";
@@ -70,7 +72,8 @@ const load = document.getElementById("load");
 const loadbar = document.getElementById("loadbar");
 const play = document.getElementById("play");
 play.onclick = function () {
-    loading(menu, game, load, loadbar);
+    //false pour pas de chargement
+    loading(menu, game, load, loadbar, true);
 };
 
 
@@ -82,6 +85,34 @@ function step() {
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function restart(){
+    await sleep(3000);
+    randomMap();
+    resetPlayer();
+    changeAnime(300, player1);
+    changeAnime(300, player2);
+}
+
+function initialPosition(){
+    player1.x=1;
+    player1.y=1;
+    player1.px=tile_height;
+    player1.py=tile_width;
+    player2.x=height-2;
+    player2.y=width-2;
+    player2.px=tile_height*player2.x;
+    player2.py=tile_width*player2.y;
+}
+
+function resetPlayer(){
+    var p1 = player1.lives;
+    var p2 = player2.lives;
+    player1 = new Player(1, 1);
+    player2 = new Player(height - 2, width - 2);
+    player1.lives=p1;
+    player2.lives=p2;
 }
 
 async function changeAnime(ms, player) {
@@ -269,8 +300,8 @@ function explose_bis(x, y, dx, dy, pow, middle, end, b) {
         if (map[px][py] == ' ') {
             if (b) {
                 explosion[px][py] = (pow == i ? end : middle);
-                if (player1.x == px && player1.y == py) player1.lives = player1.lives - 1;
-                if (player2.x == px && player2.y == py) player2.lives = player2.lives - 1;
+                if (player1.x == px && player1.y == py) player1.lives = player1.lives - 1; restart();
+                if (player2.x == px && player2.y == py) player2.lives = player2.lives - 1; restart();
                 powerup[px][py] = 0;
             } else {
                 explosion[px][py] = 0;
