@@ -22,6 +22,7 @@ class Player {
         this.dx = 0;
         this.dy = 0;
         this.is_moving = false;
+        this.reset_anim = 0;
         this.lives = 3;
         this.nb_bombe = 1;
         this.nb_bombe_pose = 0;
@@ -61,6 +62,16 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+async function changeAnime(ms, player) {
+    player.reset_anim = 1;
+    await sleep(ms - player.speed * 10);
+    player.reset_anim = 2;
+    await sleep(ms - player.speed * 10);
+    player.reset_anim = 0;
+    await sleep(ms - player.speed * 10);
+    changeAnime(ms, player);
+}
+
 function drawInGrid(nom, x, y) {
     var img = document.getElementById(nom);
     context.drawImage(img, y * tile_height, x * tile_width);
@@ -68,6 +79,31 @@ function drawInGrid(nom, x, y) {
 function drawByPixel(nom, x, y) {
     var img = document.getElementById(nom);
     context.drawImage(img, y, x);
+}
+
+function drawAnime(nom, x, y, player, k) {
+    var i = player.reset_anim + k;
+    if (player.reset_anim == 0) {
+        drawByPixel(nom + i, x, y);
+    } else if (player.reset_anim == 1) {
+        drawByPixel(nom + i, x, y);
+    } else if (player.reset_anim == 2) {
+        drawByPixel(nom + i, x, y);
+    }
+}
+
+function drawPlayer(nom, x, y, player) {
+    if (player.dx == -1) {
+        drawAnime(nom, x, y, player, 7);
+    } else if (player.dx == 1) {
+        drawAnime(nom, x, y, player, 1);
+    } else if (player.dy == -1) {
+        drawAnime(nom, x, y, player, 4);
+    } else if (player.dy == 1) {
+        drawAnime(nom, x, y, player, 12);
+    } else {
+        drawByPixel(nom + "2", x, y);
+    }
 }
 
 function drawText(text, x, y) {
@@ -135,6 +171,10 @@ function drawMap() {
     pow1.innerHTML = "puissance : " + player1.puissance;
     pow2 = document.getElementById("puissance2");
     pow2.innerHTML = "puissance : " + player2.puissance;
+    pow2 = document.getElementById("vitesse1");
+    pow2.innerHTML = "vitesse : " + player1.speed;
+    pow2 = document.getElementById("vitesse2");
+    pow2.innerHTML = "vitesse : " + player2.speed;
 
     for (var i = 0; i < map.length; i++) {
         for (var j = 0; j < map[i].length; j++) {
@@ -182,8 +222,9 @@ function drawMap() {
         }
     }
 
-    drawByPixel("player1_1", player1.px, player1.py);
-    drawByPixel("player2_1", player2.px, player2.py);
+    drawPlayer("player1_", player1.px, player1.py, player1);
+    //CHANGE PLAYER1 TO PLAYER2
+    drawPlayer("player1_", player2.px, player2.py, player2);
 }
 
 function randompowerup(px, py) {
@@ -193,7 +234,7 @@ function randompowerup(px, py) {
         powerup[px][py] = 1;
     } else if (rand < 40) {
         powerup[px][py] = 2;
-    } else if (rand < 60) {
+    } else if (rand < 100) {
         powerup[px][py] = 3;
     }
 }
@@ -275,16 +316,46 @@ function isEmpty(x, y) {
     return map[x][y] == ' ' && bombes[x][y] == 0;
 }
 
+function getx(px) {
+    return Math.floor(px / tile_height);
+}
+
+function gety(py) {
+    return Math.floor(py / tile_width);
+}
+
+function willCollide(player, dx, dy) {
+    let npx = player.px + dx * player.speed;
+    let npy = player.py + dy * player.speed;
+    let rx = getx(npx);
+    let ry = gety(npy);
+
+    if (dx > 0) {
+        rx++;
+    }
+
+    if (dy > 0) {
+        ry++;
+    }
+
+    if (dy != 0 && npx % tile_height != 0) return true;
+    if (dx != 0 && npy % tile_width != 0) return true;
+
+    return !isEmpty(rx, ry);
+
+}
+
 function turn(player, dx, dy) {
 
     let nx = player.x + dx;
     let ny = player.y + dy;
 
-    if(!isEmpty(nx, ny)){
+
+    if (willCollide(player, dx, dy)) {
         return false;
     }
 
-    if(player.dx == dx && player.dy == dy){
+    if (player.dx == dx && player.dy == dy) {
         return false;
     }
 
@@ -295,25 +366,45 @@ function turn(player, dx, dy) {
 
 }
 
+const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+
 function move(player) {
 
     let nx = player.x + player.dx;
     let ny = player.y + player.dy;
+    let npx = player.px + player.dx * player.speed;
+    let npy = player.py + player.dy * player.speed;
+    let rx = getx(npx);
+    let ry = gety(npy);
 
-    if(isEmpty(nx, ny)){
-        
-        player.y = ny;
-        player.py = player.y * tile_width;
+    if (willCollide(player, player.dx, player.dy)) {
 
-        player.x = nx;
-        player.px = player.x * tile_height;
+        if (player.dy != 0) {
+            ry = player.y;
+            npy = clamp(npy, (ry) * tile_width, (ry + 1) * tile_width);
+        }
+
+        if (player.dx != 0) {
+            rx = player.x;
+            npx = clamp(npx, (rx) * tile_height, (rx + 1) * tile_height);
+        }
 
     }
+
+    if (player.dx == -1 && npx < tile_height * (player.x - 1)) npx = tile_height * (player.x - 1);
+    if (player.dx == 1 && npx > tile_height * (player.x + 1)) npx = tile_height * (player.x + 1);
+    if (player.dy == -1 && npy < tile_width * (player.y - 1)) npy = tile_width * (player.y - 1);
+    if (player.dy == 1 && npy > tile_width * (player.y + 1)) npy = tile_width * (player.y + 1);
+
+    player.x = rx;
+    player.y = ry;
+    player.px = npx;
+    player.py = npy;
 
 }
 
 async function movePlayerSmooth(player) {
-    if(player.is_moving) return;
+    if (player.is_moving) return;
     player.is_moving = true;
     while (true) {
         var x = player.x;
@@ -326,7 +417,7 @@ async function movePlayerSmooth(player) {
 
         } else if (player.right && turn(player, 0, 1)) {
 
-        } else if(!player.right && !player.left && !player.up && !player.down){
+        } else if (!player.right && !player.left && !player.up && !player.down) {
             player.dx = 0;
             player.dy = 0;
             player.is_moving = false;
@@ -336,7 +427,9 @@ async function movePlayerSmooth(player) {
         move(player);
 
         checkpowerup(player);
-        await sleep(1 + (max_speed + 1 - player.speed) * 100);
+        //await sleep(10);
+        await sleep(20);
+        //await sleep(1 + (max_speed + 1 - player.speed));
     }
 }
 
@@ -347,7 +440,6 @@ function checkKey(e, b) {
     if (e.keyCode == '38') {
         // up arrow
         player1.up = b;
-        console.log(player1.up);
     }
     else if (e.keyCode == '40') {
         // down arrow
@@ -362,7 +454,7 @@ function checkKey(e, b) {
         player1.right = b;
     } else if (e.keyCode == '96') {
         // 0 numpad
-        if(b) putbombe(player1.x, player1.y, player1.puissance, player1);
+        if (b) putbombe(player1.x, player1.y, player1.puissance, player1);
     } else if (e.keyCode == '90') {
         // Z
         player2.up = b;
@@ -377,7 +469,16 @@ function checkKey(e, b) {
         player2.right = b;
     } else if (e.keyCode == '32') {
         // space
-        if(b) putbombe(player2.x, player2.y, player2.puissance, player2);
+        if (b) putbombe(player2.x, player2.y, player2.puissance, player2);
+    } else if (e.keyCode == '73') {
+        // i
+        var p = player1;
+        if (b) {
+            console.log("player 1 :\n" + p.x + "\t" + p.y + "\n" + p.px + "\t" + p.py + "\n");
+        } else {
+            p = player2;
+            console.log("player 2 :\n" + p.x + "\t" + p.y + "\n" + p.px + "\t" + p.py + "\n");
+        }
     }
     movePlayerSmooth(player1);
     movePlayerSmooth(player2);
@@ -390,5 +491,7 @@ window.addEventListener("load", function (event) {
     document.onkeydown = (e) => { checkKey(e, true); };
     document.onkeyup = (e) => { checkKey(e, false); };
     randomMap();
+    changeAnime(300, player1);
+    changeAnime(300, player2);
     requestAnimationFrame(step);
 });
