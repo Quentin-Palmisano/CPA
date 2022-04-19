@@ -1,0 +1,58 @@
+body{
+   background-color: #1d1d1d;
+   color:white;
+   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+   margin: 5%;
+}
+
+h1{
+    text-align: center;
+}
+
+h3{
+    text-align: center;
+}
+
+canvas{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 15%;
+}
+
+#game{
+    display: none;
+}
+
+#load{
+    display: none;
+}
+
+progress{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5%;
+    width: 400px;
+    height: 30px;
+}
+
+.play{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 15%;
+    background-color: lightgray;
+    border: none;
+    color: black;
+    padding: 8px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    font-size: 32px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    border-radius: 7px;
+}
+
+.play:hover{
+    background-color: gray;
+}

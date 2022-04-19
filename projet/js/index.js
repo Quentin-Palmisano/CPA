@@ -51,6 +51,28 @@ let max_bombe = 10;
 let max_puissance = 10;
 let max_speed = 10;
 
+async function loading(menu, game, load, loadbar){
+    load.style.display = "block";
+    for(var i=1; i<=100; i++){
+        var rand = Math.floor(Math.random() * 100);
+        loadbar.value = i;
+        if(rand<10) await sleep(100*rand);
+        if(rand>90) i = i+100-rand;
+        await sleep(50);
+    }
+    menu.style.display = "none";
+    game.style.display = "block";
+}
+
+const menu = document.getElementById("menu");
+const game = document.getElementById("game");
+const load = document.getElementById("load");
+const loadbar = document.getElementById("loadbar");
+const play = document.getElementById("play");
+play.onclick = function () {
+    loading(menu, game, load, loadbar);
+};
+
 
 function step() {
     drawMap();

@@ -2,9 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="css/index.css">
+   <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
+    <div id="menu">
+        <h1>BOMBERMAN</h1>
+        <h3>by Quentin and Paul</h3>
+        <button id="play" class="play">PLAY</button>
+        <div id="load">
+            <progress id="loadbar" max="100" value="0"></progress>
+            <h3>Ce chargement ne sert a rien...</h3>
+        </div>
+    </div>
+
+    <div id="game">
+        
+        <canvas id="myCanvas" width="500" height="500" style="border:1px solid #000000;"></canvas>
+
+        <p id="player1"></p>
+        <p id="nb_bombe1"></p>
+        <p id="nb_bombe1p"></p>
+        <p id="puissance1"></p>
+        <p id="vitesse1"></p>
+        <p id="player2"></p>
+        <p id="nb_bombe2"></p>
+        <p id="nb_bombe2p"></p>
+        <p id="puissance2"></p>
+        <p id="vitesse2"></p>
+    </div>
+
+    <script src="js/index.js"></script>
+
+
+    <!--      _____                                                            _         _____                              -->
+    <!--     |_   _|                                                          | |       / ____|                             -->
+    <!--       | |  _ __ ___   __ _  __ _  ___  ___   _ __   ___  _   _ _ __  | | ___  | |     __ _ _ ____   ____ _ ___     -->
+    <!--       | | | '_ ` _ \ / _` |/ _` |/ _ \/ __| | '_ \ / _ \| | | | '__| | |/ _ \ | |    / _` | '_ \ \ / / _` / __|    -->
+    <!--      _| |_| | | | | | (_| | (_| |  __/\__ \ | |_) | (_) | |_| | |    | |  __/ | |___| (_| | | | \ V / (_| \__ \    -->
+    <!--     |_____|_| |_| |_|\__,_|\__, |\___||___/ | .__/ \___/ \__,_|_|    |_|\___|  \_____\__,_|_| |_|\_/ \__,_|___/    -->
+    <!--                             __/ |           | |                                                                    -->
+    <!--                            |___/            |_|                                                                    -->
+
     <img id="block_incassable" src="image/block_incassable.jpg" style="display: none;">
     <img id="block_cassable" src="image/block_cassable.jpg" style="display: none;">
     <img id="case" src="image/case.jpg" style="display: none;">
@@ -38,22 +76,6 @@
     <img id="fire4_right_right" src="image/fire4_right_right.png" style="display: none;">
     <img id="fire+" src="image/fire+.png" style="display: none;">
     <img id="bombe+" src="image/bombe+.png" style="display: none;">
-    <img id="speed+" src="image/speed+.png" style="display: none;">
-
-    <canvas id="myCanvas" width="500" height="500" style="border:1px solid #000000;"></canvas>
-    <h2 id="player1"></h2>
-    <h3 id="nb_bombe1"></h3>
-    <h3 id="nb_bombe1p"></h3>
-    <h3 id="puissance1"></h3>
-    <h3 id="vitesse1"></h3>
-    <h2 id="player2"></h2>
-    <h3 id="nb_bombe2"></h3>
-    <h3 id="nb_bombe2p"></h3>
-    <h3 id="puissance2"></h3>
-    <h3 id="vitesse2"></h3>
-
-    <script src="js/index.js"></script>
-    
-   
+    <img id="speed+" src="image/speed+.png" style="display: none;">   
 </body>
 </html>
