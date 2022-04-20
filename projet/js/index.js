@@ -363,7 +363,7 @@ function explose_bis(x, y, dx, dy, pow, middle, end, b) {
         if (map[px][py] == ' ') {
             if (b) {
                 explosion[px][py] = (pow == i ? end : middle);
-                var b = false;
+                var r = false;
                 if (player2.x == px && player2.y == py && player1.x == px && player1.y == py){
                     player2.lives = player2.lives - 1;
                     player1.lives = player1.lives - 1;
@@ -371,19 +371,19 @@ function explose_bis(x, y, dx, dy, pow, middle, end, b) {
                     if(player1.lives==0) player1.won = true;
                     player2.dead = true;
                     player1.dead = true;
-                    b=true;
+                    r=true;
                 } else if (player1.x == px && player1.y == py){
                     player1.lives = player1.lives - 1;
                     if(player1.lives==0) player1.won = true;
                     player1.dead = true;
-                    b=true;
+                    r=true;
                 } else if (player2.x == px && player2.y == py){
                     player2.lives = player2.lives - 1;
                     if(player2.lives==0) player2.won = true;
                     player2.dead = true;
-                    b=true;
+                    r=true;
                 }
-                if(b)restart(); 
+                if(r)restart(); 
                 powerup[px][py] = 0;
             } else {
                 explosion[px][py] = 0;
