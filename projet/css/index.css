@@ -9,6 +9,10 @@ h1{
     text-align: center;
 }
 
+h2{
+    text-align: center;
+}
+
 h3{
     text-align: center;
 }
@@ -20,11 +24,19 @@ canvas{
     margin-top: 15%;
 }
 
+p{
+    font-size: 20px;
+}
+
 #game{
     display: none;
 }
 
 #load{
+    display: none;
+}
+
+#won{
     display: none;
 }
 
@@ -56,3 +68,22 @@ progress{
 .play:hover{
     background-color: gray;
 }
+
+.left{
+    position: absolute;
+    left: 50px;
+    top: 50px;
+}
+
+.right{
+    position: absolute;
+    right: 50px;
+    top: 50px;
+}
+
+.center{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+}
+

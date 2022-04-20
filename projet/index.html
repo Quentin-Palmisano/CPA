@@ -17,18 +17,28 @@
 
     <div id="game">
         
-        <canvas id="myCanvas" width="500" height="500" style="border:1px solid #000000;"></canvas>
+        <canvas id="myCanvas"></canvas>
 
-        <p id="player1"></p>
-        <p id="nb_bombe1"></p>
-        <p id="nb_bombe1p"></p>
-        <p id="puissance1"></p>
-        <p id="vitesse1"></p>
-        <p id="player2"></p>
-        <p id="nb_bombe2"></p>
-        <p id="nb_bombe2p"></p>
-        <p id="puissance2"></p>
-        <p id="vitesse2"></p>
+        <h1 id="won"></h1>
+
+        <div class="left">
+            <h2>PLAYER 1</h2>
+            <p id="vie1"></p>
+            <p id="nb_bombe1"></p>
+            <p id="nb_bombe1p"></p>
+            <p id="puissance1"></p>
+            <p id="vitesse1"></p>
+        </div>
+        
+        <div class="right">
+            <h3>PLAYER 2</h3>
+            <p id="vie2"></p>
+            <p id="nb_bombe2"></p>
+            <p id="nb_bombe2p"></p>
+            <p id="puissance2"></p>
+            <p id="vitesse2"></p>
+        </div>
+        
     </div>
 
     <script src="js/index.js"></script>
@@ -46,6 +56,7 @@
     <img id="block_incassable" src="image/block_incassable.jpg" style="display: none;">
     <img id="block_cassable" src="image/block_cassable.jpg" style="display: none;">
     <img id="case" src="image/case.jpg" style="display: none;">
+    <img id="player_dead" src="image/player_dead.png" style="display: none;">
     <img id="player1_1" src="image/player1_1.png" style="display: none;">
     <img id="player1_2" src="image/player1_2.png" style="display: none;">
     <img id="player1_3" src="image/player1_3.png" style="display: none;">

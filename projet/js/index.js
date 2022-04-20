@@ -9,8 +9,18 @@ let tile_height = 38;
 //largeur d'une image
 let tile_width = 38;
 
+let gray = "#1d1d1d";
+
 let canvas = document.getElementById("myCanvas");
 let context = canvas.getContext("2d");
+
+const menu = document.getElementById("menu");
+const game = document.getElementById("game");
+const load = document.getElementById("load");
+const loadbar = document.getElementById("loadbar");
+const play = document.getElementById("play");
+const won = document.getElementById("won");
+
 let start = null;
 
 class Player {
@@ -24,6 +34,8 @@ class Player {
         this.is_moving = false;
         this.reset_anim = 0;
         this.lives = 3;
+        this.dead = false;
+        this.won = false;
         this.nb_bombe = 1;
         this.nb_bombe_pose = 0;
         this.puissance = 1;
@@ -51,7 +63,9 @@ let max_bombe = 10;
 let max_puissance = 10;
 let max_speed = 10;
 
-async function loading(menu, game, load, loadbar, b){
+let kill = false;
+
+async function loading(b){
     load.style.display = "block";
     if(b){
         for(var i=1; i<=100; i++){
@@ -62,22 +76,28 @@ async function loading(menu, game, load, loadbar, b){
             await sleep(50);
         }
     }
+
+    load.style.display = "none";
     menu.style.display = "none";
     game.style.display = "block";
 }
 
-const menu = document.getElementById("menu");
-const game = document.getElementById("game");
-const load = document.getElementById("load");
-const loadbar = document.getElementById("loadbar");
-const play = document.getElementById("play");
 play.onclick = function () {
+    launch();
     //false pour pas de chargement
-    loading(menu, game, load, loadbar, true);
+    loading(true);
 };
 
 
-function step() {
+async function step() {
+    if(player1.won || player2.won){
+        drawWon(player1.won ? "player 1" : "player 2");
+        await sleep(5000);
+        won.style.display = "none";
+        game.style.display = "none";
+        menu.style.display = "block";
+        return;
+    }
     drawMap();
     requestAnimationFrame(step);
 }
@@ -87,8 +107,24 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function drawWon(player){
+    drawColor(gray);
+    won.style.display = "block";
+    won.innerHTML = player + " won !";
+}
+
+function drawColor(color){
+    context.beginPath();
+    context.rect(0, 0, width*tile_width, height*tile_height);
+    context.fillStyle = color;
+    context.fill();
+}
+
 async function restart(){
     await sleep(3000);
+    kill = true;
+    await sleep(3000);
+    kill = false;
     randomMap();
     resetPlayer();
     changeAnime(300, player1);
@@ -116,13 +152,22 @@ function resetPlayer(){
 }
 
 async function changeAnime(ms, player) {
-    player.reset_anim = 1;
-    await sleep(ms - player.speed * 10);
-    player.reset_anim = 2;
-    await sleep(ms - player.speed * 10);
-    player.reset_anim = 0;
-    await sleep(ms - player.speed * 10);
-    changeAnime(ms, player);
+    if(player.dead){
+        player.reset_anim = 0;
+        await sleep(200);
+        player.reset_anim = 1;
+        await sleep(200);
+        changeAnime(ms, player);
+    }else{
+        player.reset_anim = 1;
+        await sleep(ms - player.speed * 10);
+        player.reset_anim = 2;
+        await sleep(ms - player.speed * 10);
+        player.reset_anim = 0;
+        await sleep(ms - player.speed * 10);
+        changeAnime(ms, player);
+    }
+    
 }
 
 function drawInGrid(nom, x, y) {
@@ -135,28 +180,42 @@ function drawByPixel(nom, x, y) {
 }
 
 function drawAnime(nom, x, y, player, k) {
-    var i = player.reset_anim + k;
-    if (player.reset_anim == 0) {
-        drawByPixel(nom + i, x, y);
-    } else if (player.reset_anim == 1) {
-        drawByPixel(nom + i, x, y);
-    } else if (player.reset_anim == 2) {
-        drawByPixel(nom + i, x, y);
+    if(player.dead){
+        if (player.reset_anim == 0) {
+            drawByPixel("player_dead", x, y);
+        } else if (player.reset_anim == 1) {
+            drawByPixel(nom + 2, x, y);
+        }
+    }else{
+        var i = player.reset_anim + k;
+        if (player.reset_anim == 0) {
+            drawByPixel(nom + i, x, y);
+        } else if (player.reset_anim == 1) {
+            drawByPixel(nom + i, x, y);
+        } else if (player.reset_anim == 2) {
+            drawByPixel(nom + i, x, y);
+        }
     }
+    
 }
 
 function drawPlayer(nom, x, y, player) {
-    if (player.dx == -1) {
-        drawAnime(nom, x, y, player, 7);
-    } else if (player.dx == 1) {
-        drawAnime(nom, x, y, player, 1);
-    } else if (player.dy == -1) {
-        drawAnime(nom, x, y, player, 4);
-    } else if (player.dy == 1) {
-        drawAnime(nom, x, y, player, 12);
-    } else {
-        drawByPixel(nom + "2", x, y);
+    if(player.dead){
+        drawAnime(nom, x, y, player, -1);
+    }else{
+        if (player.dx == -1) {
+            drawAnime(nom, x, y, player, 7);
+        } else if (player.dx == 1) {
+            drawAnime(nom, x, y, player, 1);
+        } else if (player.dy == -1) {
+            drawAnime(nom, x, y, player, 4);
+        } else if (player.dy == 1) {
+            drawAnime(nom, x, y, player, 12);
+        } else {
+            drawByPixel(nom + "2", x, y);
+        }
     }
+    
 }
 
 function drawText(text, x, y) {
@@ -207,11 +266,16 @@ function randomMap() {
 function drawMap() {
     //context.clearRect(0, 0, width, height);
 
+    if(kill){
+        drawColor(gray);
+        return;
+    }
+
     //AFFICHAGE DES DONNEES DES JOUEURS
-    p1 = document.getElementById("player1");
-    p1.innerHTML = "player 1 : " + player1.lives + " (vie)";
-    p2 = document.getElementById("player2");
-    p2.innerHTML = "player 2 : " + player2.lives + " (vie)";
+    p1 = document.getElementById("vie1");
+    p1.innerHTML = "vies : " + player1.lives;
+    p2 = document.getElementById("vie2");
+    p2.innerHTML = "vies : " + player2.lives;
     nbb1 = document.getElementById("nb_bombe1");
     nbb1.innerHTML = "NB bombes : " + player1.nb_bombe;
     nbb2 = document.getElementById("nb_bombe2");
@@ -300,8 +364,27 @@ function explose_bis(x, y, dx, dy, pow, middle, end, b) {
         if (map[px][py] == ' ') {
             if (b) {
                 explosion[px][py] = (pow == i ? end : middle);
-                if (player1.x == px && player1.y == py) player1.lives = player1.lives - 1; restart();
-                if (player2.x == px && player2.y == py) player2.lives = player2.lives - 1; restart();
+                var b = false;
+                if (player2.x == px && player2.y == py && player1.x == px && player1.y == py){
+                    player2.lives = player2.lives - 1;
+                    player1.lives = player1.lives - 1;
+                    if(player2.lives==0) player2.won = true;
+                    if(player1.lives==0) player1.won = true;
+                    player2.dead = true;
+                    player1.dead = true;
+                    b=true;
+                } else if (player1.x == px && player1.y == py){
+                    player1.lives = player1.lives - 1;
+                    if(player1.lives==0) player1.won = true;
+                    player1.dead = true;
+                    b=true;
+                } else if (player2.x == px && player2.y == py){
+                    player2.lives = player2.lives - 1;
+                    if(player2.lives==0) player2.won = true;
+                    player2.dead = true;
+                    b=true;
+                }
+                if(b)restart(); 
                 powerup[px][py] = 0;
             } else {
                 explosion[px][py] = 0;
@@ -489,6 +572,9 @@ async function movePlayerSmooth(player) {
 function checkKey(e, b) {
     e = e || window.event;
 
+    if(player1.dead || player2.dead) return;
+        
+    
 
     if (e.keyCode == '38') {
         // up arrow
@@ -537,14 +623,19 @@ function checkKey(e, b) {
     movePlayerSmooth(player2);
 }
 
-
-window.addEventListener("load", function (event) {
+function launch(){
     canvas.width = width * tile_width;
     canvas.height = height * tile_height;
+    player1 = new Player(1, 1);
+    player2 = new Player(height - 2, width - 2);
     document.onkeydown = (e) => { checkKey(e, true); };
     document.onkeyup = (e) => { checkKey(e, false); };
     randomMap();
     changeAnime(300, player1);
     changeAnime(300, player2);
     requestAnimationFrame(step);
+}
+
+window.addEventListener("load", function (event) {
+    launch();
 });
