@@ -340,8 +340,7 @@ function drawMap() {
     }
 
     drawPlayer("player1_", player1.px, player1.py, player1);
-    //CHANGE PLAYER1 TO PLAYER2
-    drawPlayer("player1_", player2.px, player2.py, player2);
+    drawPlayer("player2_", player2.px, player2.py, player2);
 }
 
 function randompowerup(px, py) {
