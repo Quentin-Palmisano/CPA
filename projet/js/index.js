@@ -5,9 +5,9 @@ let height = 11;
 //largeur de la map
 let width = 13;
 //hauteur d'une image
-let tile_height = 38;
+let tile_height = 50;
 //largeur d'une image
-let tile_width = 38;
+let tile_width = 50;
 
 let gray = "#1d1d1d";
 
@@ -172,11 +172,11 @@ async function changeAnime(ms, player) {
 
 function drawInGrid(nom, x, y) {
     var img = document.getElementById(nom);
-    context.drawImage(img, y * tile_height, x * tile_width);
+    context.drawImage(img, y * tile_height, x * tile_width, tile_height, tile_width);
 }
 function drawByPixel(nom, x, y) {
     var img = document.getElementById(nom);
-    context.drawImage(img, y, x);
+    context.drawImage(img, y, x, tile_height, tile_width);
 }
 
 function drawAnime(nom, x, y, player, k) {
