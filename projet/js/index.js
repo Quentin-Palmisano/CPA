@@ -91,7 +91,11 @@ play.onclick = function () {
 
 async function step() {
     if(player1.won || player2.won){
-        drawWon(player1.won ? "player 1" : "player 2");
+        if(player1.won && player2.won){
+            drawWon("match nul");
+        }else{
+            drawWon(player1.won ? "player 1" : "player 2");
+        }
         await sleep(5000);
         won.style.display = "none";
         game.style.display = "none";
@@ -367,19 +371,19 @@ function explose_bis(x, y, dx, dy, pow, middle, end, b) {
                 if (player2.x == px && player2.y == py && player1.x == px && player1.y == py){
                     player2.lives = player2.lives - 1;
                     player1.lives = player1.lives - 1;
-                    if(player2.lives==0) player2.won = true;
-                    if(player1.lives==0) player1.won = true;
+                    if(player2.lives==0) player1.won = true;
+                    if(player1.lives==0) player2.won = true;
                     player2.dead = true;
                     player1.dead = true;
                     r=true;
                 } else if (player1.x == px && player1.y == py){
                     player1.lives = player1.lives - 1;
-                    if(player1.lives==0) player1.won = true;
+                    if(player1.lives==0) player2.won = true;
                     player1.dead = true;
                     r=true;
                 } else if (player2.x == px && player2.y == py){
                     player2.lives = player2.lives - 1;
-                    if(player2.lives==0) player2.won = true;
+                    if(player2.lives==0) player1.won = true;
                     player2.dead = true;
                     r=true;
                 }
