@@ -8,6 +8,14 @@ let width = 13;
 let tile_height = 50;
 //largeur d'une image
 let tile_width = 50;
+//nombre maximum de powerup par joueur
+let max_bombe = 10;
+let max_puissance = 10;
+let max_speed = 10;
+//nombre de vie des joueurs
+let nb_lives = 3;
+//barre de chargement
+let chargement = true;
 
 let gray = "#1d1d1d";
 
@@ -20,6 +28,9 @@ const load = document.getElementById("load");
 const loadbar = document.getElementById("loadbar");
 const play = document.getElementById("play");
 const won = document.getElementById("won");
+const parambutton = document.getElementById("parambutton");
+const param = document.getElementById("param");
+const valider = document.getElementById("valider");
 
 let start = null;
 
@@ -33,7 +44,7 @@ class Player {
         this.dy = 0;
         this.is_moving = false;
         this.reset_anim = 0;
-        this.lives = 3;
+        this.lives = nb_lives;
         this.dead = false;
         this.won = false;
         this.nb_bombe = 1;
@@ -58,11 +69,6 @@ let powerup;
 let player1 = new Player(1, 1);
 let player2 = new Player(height - 2, width - 2);
 
-//nombre maximum de powerup par joueur
-let max_bombe = 10;
-let max_puissance = 10;
-let max_speed = 10;
-
 let kill = false;
 
 async function loading(b){
@@ -85,7 +91,31 @@ async function loading(b){
 play.onclick = function () {
     launch();
     //false pour pas de chargement
-    loading(true);
+    loading(chargement);
+};
+
+parambutton.onclick = function () {
+    menu.style.display = "none";
+    param.style.display = "block";
+};
+
+valider.onclick = function () {
+    menu.style.display = "block";
+    param.style.display = "none";
+    var form = document.getElementById("parametre");
+    var formData = new FormData(form);
+    if(formData.get("lives")!=null && formData.get("lives")>0) nb_lives = formData.get("lives");
+    if(formData.get("height")!=null && formData.get("height")>4) height = formData.get("height");
+    if(formData.get("width")!=null && formData.get("width")>4) width = formData.get("width");
+    if(formData.get("max_speed")!=null && formData.get("max_speed")>=0) max_speed = formData.get("max_speed");
+    if(formData.get("max_bombe")!=null && formData.get("max_bombe")>=0) max_bombe = formData.get("max_bombe");
+    if(formData.get("max_fire")!=null && formData.get("max_fire")>=0) max_puissance = formData.get("max_fire");
+    if(formData.get("percent")!=null && formData.get("percent")>=0) percent = formData.get("percent");
+    if(formData.get("load")==null){
+        chargement = true;  
+    } else{
+        chargement = false;
+    }
 };
 
 
@@ -354,7 +384,7 @@ function randompowerup(px, py) {
         powerup[px][py] = 1;
     } else if (rand < 40) {
         powerup[px][py] = 2;
-    } else if (rand < 100) {
+    } else if (rand < 60) {
         powerup[px][py] = 3;
     }
 }
