@@ -106,10 +106,10 @@ valider.onclick = function () {
     if(formData.get("lives")!=null && formData.get("lives")>0) nb_lives = formData.get("lives");
     if(formData.get("height")!=null && formData.get("height")>4) height = formData.get("height");
     if(formData.get("width")!=null && formData.get("width")>4) width = formData.get("width");
-    if(formData.get("max_speed")!=null && formData.get("max_speed")>=0) max_speed = formData.get("max_speed");
-    if(formData.get("max_bombe")!=null && formData.get("max_bombe")>=0) max_bombe = formData.get("max_bombe");
-    if(formData.get("max_fire")!=null && formData.get("max_fire")>=0) max_puissance = formData.get("max_fire");
-    if(formData.get("percent")!=null && formData.get("percent")>=0) percent = formData.get("percent");
+    if(formData.get("max_speed")!=null && formData.get("max_speed")>0) max_speed = formData.get("max_speed");
+    if(formData.get("max_bombe")!=null && formData.get("max_bombe")>0) max_bombe = formData.get("max_bombe");
+    if(formData.get("max_fire")!=null && formData.get("max_fire")>0) max_puissance = formData.get("max_fire");
+    if(formData.get("percent")!=null && formData.get("percent")>0) percent = formData.get("percent");
     if(formData.get("load")==null){
         chargement = true;  
     } else{
@@ -409,7 +409,7 @@ function explose_bis(x, y, dx, dy, pow, middle, end, b) {
                     if(player1.lives==0) player2.won = true;
                     player1.dead = true;
                     r=true;
-                } else if (player2.x == px && player2.y == py){
+                } else if (player1.x == px && player2.y == py){
                     player2.lives = player2.lives - 1;
                     if(player2.lives==0) player1.won = true;
                     player2.dead = true;
