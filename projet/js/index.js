@@ -15,7 +15,7 @@ let max_speed = 5;
 //nombre de vie des joueurs
 let nb_lives = 3;
 //barre de chargement
-let chargement = false;
+let chargement = true;
 
 let gray = "#1d1d1d";
 
@@ -90,7 +90,6 @@ async function loading(b){
 
 play.onclick = function () {
     launch();
-    //false pour pas de chargement
     loading(chargement);
 };
 
