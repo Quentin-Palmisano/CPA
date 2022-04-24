@@ -103,15 +103,15 @@ valider.onclick = function () {
     menu.style.display = "block";
     param.style.display = "none";
     var form = document.getElementById("parametre");
-    FormData = new FormData(form);
-    if(FormData.get("lives")!=null && FormData.get("lives")>0) nb_lives = FormData.get("lives");
-    if(FormData.get("height")!=null && FormData.get("height")>4) height = FormData.get("height");
-    if(FormData.get("width")!=null && FormData.get("width")>4) width = FormData.get("width");
-    if(FormData.get("max_speed")!=null && FormData.get("max_speed")>=0) max_speed = FormData.get("max_speed");
-    if(FormData.get("max_bombe")!=null && FormData.get("max_bombe")>=0) max_bombe = FormData.get("max_bombe");
-    if(FormData.get("max_fire")!=null && FormData.get("max_fire")>=0) max_puissance = FormData.get("max_fire");
-    if(FormData.get("percent")!=null && FormData.get("percent")>=0) percent = FormData.get("percent");
-    if(FormData.get("load")==null){
+    var formData = new FormData(form);
+    if(formData.get("lives")!=null && formData.get("lives")>0) nb_lives = formData.get("lives");
+    if(formData.get("height")!=null && formData.get("height")>4) height = formData.get("height");
+    if(formData.get("width")!=null && formData.get("width")>4) width = formData.get("width");
+    if(formData.get("max_speed")!=null && formData.get("max_speed")>=0) max_speed = formData.get("max_speed");
+    if(formData.get("max_bombe")!=null && formData.get("max_bombe")>=0) max_bombe = formData.get("max_bombe");
+    if(formData.get("max_fire")!=null && formData.get("max_fire")>=0) max_puissance = formData.get("max_fire");
+    if(formData.get("percent")!=null && formData.get("percent")>=0) percent = formData.get("percent");
+    if(formData.get("load")==null){
         chargement = true;  
     } else{
         chargement = false;
