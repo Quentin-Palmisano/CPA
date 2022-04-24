@@ -50,7 +50,7 @@ class Player {
         this.nb_bombe = 1;
         this.nb_bombe_pose = 0;
         this.puissance = 1;
-        this.speed = 1;
+        this.speed = 1.5;
         this.up = false;
         this.down = false;
         this.right = false;
@@ -471,14 +471,14 @@ async function putbombe(x, y, pow, player) {
 }
 
 function checkpowerup(player) {
-    if (powerup[player.x][player.y] == 1 && player.nb_bombe < max_bombe) {
+    if (powerup[getmx(player.px)][getmy(player.py)] == 1 && player.nb_bombe < max_bombe) {
         player.nb_bombe = player.nb_bombe + 1;
-    } else if (powerup[player.x][player.y] == 2 && player.puissance < max_puissance) {
+    } else if (powerup[getmx(player.px)][getmy(player.py)] == 2 && player.puissance < max_puissance) {
         player.puissance = player.puissance + 1;
-    } else if (powerup[player.x][player.y] == 3 && player.speed < max_speed) {
+    } else if (powerup[getmx(player.px)][getmy(player.py)] == 3 && player.speed < max_speed) {
         player.speed = player.speed + 1;
     }
-    powerup[player.x][player.y] = 0;
+    powerup[getmx(player.px)][getmy(player.py)] = 0;
 }
 
 function isEmpty(x, y) {
