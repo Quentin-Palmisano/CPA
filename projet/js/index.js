@@ -11,7 +11,7 @@ let tile_width = 50;
 //nombre maximum de powerup par joueur
 let max_bombe = 10;
 let max_puissance = 10;
-let max_speed = 10;
+let max_speed = 5;
 //nombre de vie des joueurs
 let nb_lives = 3;
 //barre de chargement
@@ -298,7 +298,6 @@ function randomMap() {
 }
 
 function drawMap() {
-    //context.clearRect(0, 0, width, height);
 
     if(kill){
         drawColor(gray);
@@ -604,7 +603,7 @@ async function movePlayerSmooth(player) {
         move(player);
 
         checkpowerup(player);
-        await sleep(15-player.speed/100);
+        await sleep(15);
     }
 }
 
