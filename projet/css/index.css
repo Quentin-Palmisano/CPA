@@ -21,7 +21,7 @@ canvas{
     display: block;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 15%;
+    margin-top: 5%;
 }
 
 p{
@@ -40,6 +40,10 @@ p{
     display: none;
 }
 
+#param{
+    display: none;
+}
+
 progress{
     display: block;
     margin-left: auto;
@@ -49,10 +53,10 @@ progress{
     height: 30px;
 }
 
-.play{
+.button{
     margin-left: auto;
     margin-right: auto;
-    margin-top: 15%;
+    margin-top: 10%;
     background-color: lightgray;
     border: none;
     color: black;
@@ -65,7 +69,7 @@ progress{
     border-radius: 7px;
 }
 
-.play:hover{
+.button:hover{
     background-color: gray;
 }
 
@@ -85,5 +89,26 @@ progress{
     position: fixed;
     top: 50%;
     left: 50%;
+}
+
+.number{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+    background-color: lightgray;
+    border: none;
+    color: black;
+    padding: 8px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    font-size: 16px;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    border-radius: 7px;
+}
+
+.check{
+    height: 5px;
+    width: 5px;
 }
 

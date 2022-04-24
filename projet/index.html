@@ -1,25 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+   <meta charset="utf-8">
+   <title>Bomberman</title>
    <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
+
     <div id="menu">
         <h1>BOMBERMAN</h1>
         <h3>by Quentin and Paul</h3>
-        <button id="play" class="play">PLAY</button>
+        <button id="play" class="button">PLAY</button>
+        <button id="parambutton" class="button">PARAMETRE</button>
         <div id="load">
             <progress id="loadbar" max="100" value="0"></progress>
             <h3>Ce chargement ne sert a rien...</h3>
         </div>
+        
+    </div>
+
+    <div id="param">
+        <form id="parametre" action="GET">
+            <input class="number" type="number" name="lives" placeholder="nombre de vie" title="nombre de vie">
+            <br>
+            <input class="number" type="number" name="height" placeholder="hauteur map" title="hauteur map">
+            <br>
+            <input class="number" type="number" name="width" placeholder="largeur map" title="largeur map">
+            <br>
+            <input class="number" type="number" name="max_speed" placeholder="vitesse max" title="vitesse max">
+            <br>
+            <input class="number" type="number" name="max_fire" placeholder="puissance max" title="puissance max">
+            <br>
+            <input class="number" type="number" name="max_bombe" placeholder="bombe max" title="bombe max">
+            <br>
+            <input class="number" type="number" name="percent" placeholder="% de block cassable" title="% de block cassable">
+            <input class="number check" type="checkbox" name="load">
+        </form>
+        <button id="valider" class="button">VALIDER</button>
     </div>
 
     <div id="game">
-        
-        <canvas id="myCanvas"></canvas>
 
         <h1 id="won"></h1>
+        
+        <canvas id="myCanvas"></canvas>
 
         <div class="left">
             <h2>PLAYER 1</h2>
@@ -42,7 +66,6 @@
     </div>
 
     <script src="js/index.js"></script>
-
 
     <!--      _____                                                            _         _____                              -->
     <!--     |_   _|                                                          | |       / ____|                             -->
