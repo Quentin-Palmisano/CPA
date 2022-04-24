@@ -15,7 +15,7 @@ let max_speed = 10;
 //nombre de vie des joueurs
 let nb_lives = 3;
 //barre de chargement
-let chargement = true;
+let chargement = false;
 
 let gray = "#1d1d1d";
 
