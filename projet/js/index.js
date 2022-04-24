@@ -463,6 +463,14 @@ function gety(py) {
     return Math.floor(py / tile_width);
 }
 
+function getmx(px) {
+    return Math.floor(px / tile_height + 0.5);
+}
+
+function getmy(py) {
+    return Math.floor(py / tile_width + 0.5);
+}
+
 function willCollide(player, dx, dy) {
     let npx = player.px + dx * player.speed;
     let npy = player.py + dy * player.speed;
@@ -596,7 +604,7 @@ function checkKey(e, b) {
         player1.right = b;
     } else if (e.keyCode == '96') {
         // 0 numpad
-        if (b) putbombe(player1.x, player1.y, player1.puissance, player1);
+        if (b) putbombe(getmx(player1.px), getmy(player1.py), player1.puissance, player1);
     } else if (e.keyCode == '90') {
         // Z
         player2.up = b;
@@ -611,7 +619,7 @@ function checkKey(e, b) {
         player2.right = b;
     } else if (e.keyCode == '32') {
         // space
-        if (b) putbombe(player2.x, player2.y, player2.puissance, player2);
+        if (b) putbombe(getmx(player2.px), getmy(player2.py), player2.puissance, player2);
     } else if (e.keyCode == '73') {
         // i
         var p = player1;
