@@ -117,7 +117,6 @@ valider.onclick = function () {
     }
 };
 
-
 async function step() {
     if(player1.won || player2.won){
         if(player1.won && player2.won){
@@ -138,19 +137,6 @@ async function step() {
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function drawWon(player){
-    drawColor(gray);
-    won.style.display = "block";
-    won.innerHTML = player + " won !";
-}
-
-function drawColor(color){
-    context.beginPath();
-    context.rect(0, 0, width*tile_width, height*tile_height);
-    context.fillStyle = color;
-    context.fill();
 }
 
 async function restart(){
@@ -201,6 +187,19 @@ async function changeAnime(ms, player) {
         changeAnime(ms, player);
     }
     
+}
+
+function drawWon(player){
+    drawColor(gray);
+    won.style.display = "block";
+    won.innerHTML = player + " won !";
+}
+
+function drawColor(color){
+    context.beginPath();
+    context.rect(0, 0, width*tile_width, height*tile_height);
+    context.fillStyle = color;
+    context.fill();
 }
 
 function drawInGrid(nom, x, y) {
@@ -378,11 +377,11 @@ function drawMap() {
 function randompowerup(px, py) {
     var rand = Math.floor(Math.random() * 100);
     map[px][py] = ' ';
-    if (rand < 0) {
+    if (rand < 20) {
         powerup[px][py] = 1;
-    } else if (rand < 0) {
+    } else if (rand < 40) {
         powerup[px][py] = 2;
-    } else if (rand < 100) {
+    } else if (rand < 60) {
         powerup[px][py] = 3;
     }
 }
