@@ -50,7 +50,7 @@ class Player {
         this.nb_bombe = 1;
         this.nb_bombe_pose = 0;
         this.puissance = 1;
-        this.speed = 1.5;
+        this.speed = 1;
         this.up = false;
         this.down = false;
         this.right = false;
@@ -380,11 +380,11 @@ function drawMap() {
 function randompowerup(px, py) {
     var rand = Math.floor(Math.random() * 100);
     map[px][py] = ' ';
-    if (rand < 20) {
+    if (rand < 0) {
         powerup[px][py] = 1;
-    } else if (rand < 40) {
+    } else if (rand < 0) {
         powerup[px][py] = 2;
-    } else if (rand < 60) {
+    } else if (rand < 100) {
         powerup[px][py] = 3;
     }
 }
@@ -604,9 +604,7 @@ async function movePlayerSmooth(player) {
         move(player);
 
         checkpowerup(player);
-        //await sleep(10);
-        await sleep(20);
-        //await sleep(1 + (max_speed + 1 - player.speed));
+        await sleep(15-player.speed/100);
     }
 }
 
